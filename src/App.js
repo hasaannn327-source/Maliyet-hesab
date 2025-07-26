@@ -1,89 +1,86 @@
 import React, { useState } from "react";
 
-export default function App() { const [sayi, setSayi] = useState(0); const [loading, setLoading] = useState(false); const [showResult, setShowResult] = useState(false); const [ekstraGiderEkle, setEkstraGiderEkle] = useState(false); const [sonuc, setSonuc] = useState({});
+export default function MaliyetHesaplama() { const [m2, setM2] = useState(0); const [showResult, setShowResult] = useState(false); const [includeExtras, setIncludeExtras] = useState(false); const [sonuc, setSonuc] = useState({});
 
-const hesapla = () => { setLoading(true); setShowResult(false); setTimeout(() => { const beton = sayi * 0.35; const demirKg = sayi * 40; const demirTon = demirKg / 1000; const kalipIscilik = sayi * 1500; const cati = sayi * 1500; const duvar = sayi * 320; const toplam = kalipIscilik + cati + duvar;
+const formatBinTL = (value) => { const binTL = Math.round(value / 1000); return ${binTL.toLocaleString()} (bin TL); };
 
-const projeGider = 150000;
-  const zeminEtudu = 120000;
-  const ruhsatPerM2 = 8;
-  const ruhsatHarc = sayi * ruhsatPerM2;
-  const yapiDenetim = 80000;
-  const hafriyatPerM2 = 900;
-  const hafriyat = sayi * hafriyatPerM2;
+const hesapla = () => { setShowResult(true); const betonM3 = m2 * 0.35; const demirKg = m2 * 40; const demirTon = demirKg / 1000; const kalipDemirIscilik = m2 * 1500; const cati = m2 * 1500; const duvar = m2 * 320;
 
-  const ekstraGiderler = ekstraGiderEkle ? (
-    zeminEtudu + projeGider + ruhsatHarc + yapiDenetim + hafriyat
-  ) : 0;
+let toplamMaliyet = kalipDemirIscilik + cati + duvar;
+let giderKalemleri = [];
 
-  const genelToplam = toplam + ekstraGiderler;
+if (includeExtras) {
+  const zeminEtudu = 10000;
+  const projeCizim = 30000;
+  const ruhsatHarci = m2 * 8;
+  const yapiDenetim = m2 * 60;
+  const hafriyat = 40000;
+  toplamMaliyet += zeminEtudu + projeCizim + ruhsatHarci + yapiDenetim + hafriyat;
+  giderKalemleri = [
+    { ad: "Zemin Etüdü", tutar: zeminEtudu },
+    { ad: "Proje Çizimi", tutar: projeCizim },
+    { ad: "Ruhsat Harcı", tutar: ruhsatHarci },
+    { ad: "Yapı Denetim", tutar: yapiDenetim },
+    { ad: "Hafriyat", tutar: hafriyat }
+  ];
+}
 
-  setSonuc({ beton, demirKg, demirTon, kalipIscilik, cati, duvar, toplam, 
-    projeGider, zeminEtudu, ruhsatHarc, yapiDenetim, hafriyat, ekstraGiderler, genelToplam });
-  setLoading(false);
-  setShowResult(true);
-}, 1000);
+setSonuc({
+  betonM3,
+  demirKg,
+  demirTon,
+  kalipDemirIscilik,
+  cati,
+  duvar,
+  toplamMaliyet,
+  giderKalemleri
+});
 
 };
 
-const formatBinTL = (deger) => { const sayi = Math.round(deger); return sayi.toLocaleString("tr-TR") + " (" + yaziylaYaz(sayi) + ") TL"; };
+return ( <div className="p-4 max-w-xl mx-auto space-y-4"> <h1 className="text-xl font-bold">İnşaat Maliyet Hesaplama</h1> <input type="number" value={m2} onChange={(e) => setM2(Number(e.target.value))} placeholder="İnşaat Alanı (m²)" className="border rounded p-2 w-full" />
 
-const yaziylaYaz = (sayi) => { const formatter = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }); const yazi = sayi.toLocaleString('tr-TR'); // Gerçek yazıya çevirme yerine basit örnek format kullanalım if (sayi >= 1000000) return Math.round(sayi / 1000000) + " milyon"; if (sayi >= 1000) return Math.round(sayi / 1000) + " bin"; return sayi.toString(); };
-
-return ( <div className="p-6 max-w-2xl mx-auto"> <h1 className="text-2xl font-bold mb-4">Maliyet Hesaplama</h1>
-
-<input
-    type="number"
-    value={sayi}
-    onChange={(e) => setSayi(parseFloat(e.target.value))}
-    className="border p-2 w-full mb-4"
-    placeholder="İnşaat alanı (m²)"
-  />
-
-  <label className="flex items-center space-x-2 mb-4">
+<label className="flex items-center space-x-2">
     <input
       type="checkbox"
-      checked={ekstraGiderEkle}
-      onChange={(e) => setEkstraGiderEkle(e.target.checked)}
+      checked={includeExtras}
+      onChange={(e) => setIncludeExtras(e.target.checked)}
     />
     <span>İnşaat öncesi giderleri dahil et</span>
   </label>
 
   <button
     onClick={hesapla}
-    className="bg-blue-600 text-white px-4 py-2 rounded"
+    className="bg-blue-500 text-white px-4 py-2 rounded"
   >
     Hesapla
   </button>
 
-  {loading && <p className="mt-4">Hesaplanıyor...</p>}
-
   {showResult && (
-    <div className="mt-6 space-y-2">
-      <h2 className="text-xl font-semibold">Sonuçlar</h2>
-      <ul className="list-disc list-inside space-y-1">
-        <li>Beton: {sonuc.beton.toFixed(2)} m³</li>
-        <li>Demir: {sonuc.demirKg.toFixed(0)} kg ({sonuc.demirTon.toFixed(2)} ton)</li>
-        <li>Kalıp/Demir İşçiliği: {formatBinTL(sonuc.kalipIscilik)}</li>
-        <li>Çatı: {formatBinTL(sonuc.cati)}</li>
-        <li>Duvar: {formatBinTL(sonuc.duvar)}</li>
-        <li className="font-bold">Toplam (Kaba): {formatBinTL(sonuc.toplam)}</li>
+    <div className="mt-4 space-y-2">
+      <h2 className="text-lg font-semibold">Sonuçlar:</h2>
+      <p>Beton: {sonuc.betonM3.toFixed(1)} m³</p>
+      <p>Demir: {sonuc.demirKg.toLocaleString()} kg ({sonuc.demirTon.toFixed(2)} ton)</p>
+      <p>Kalıp/Demir İşçilik: {formatBinTL(sonuc.kalipDemirIscilik)}</p>
+      <p>Çatı: {formatBinTL(sonuc.cati)}</p>
+      <p>Duvar: {formatBinTL(sonuc.duvar)}</p>
 
-        {ekstraGiderEkle && (
-          <>
-            <li>Zemin Etüdü + Rapor: {formatBinTL(sonuc.zeminEtudu)}</li>
-            <li>Proje Çizimleri: {formatBinTL(sonuc.projeGider)}</li>
-            <li>Ruhsat Harcı: {formatBinTL(sonuc.ruhsatHarc)}</li>
-            <li>Yapı Denetim + Harç: {formatBinTL(sonuc.yapiDenetim)}</li>
-            <li>Hafriyat + Grobeton: {formatBinTL(sonuc.hafriyat)}</li>
-            <li className="font-bold">Genel Ön Hazırlık Toplam: {formatBinTL(sonuc.ekstraGiderler)}</li>
-            <li className="font-bold text-blue-800">Genel Toplam: {formatBinTL(sonuc.genelToplam)}</li>
-          </>
-        )}
-      </ul>
+      {includeExtras && (
+        <div className="mt-2">
+          <h3 className="font-semibold">İnşaat Öncesi Giderler:</h3>
+          <ul className="list-disc list-inside">
+            {sonuc.giderKalemleri.map((gider, i) => (
+              <li key={i}>{gider.ad}: {formatBinTL(gider.tutar)}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p className="font-bold mt-2">Toplam Maliyet: {formatBinTL(sonuc.toplamMaliyet)}</p>
     </div>
   )}
 </div>
 
 ); }
 
+        

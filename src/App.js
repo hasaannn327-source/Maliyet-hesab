@@ -96,6 +96,10 @@ export default function App() {
       ongorulmayanGiderler +
       resmiIslemler;
 
+    // %5 hata payı
+    const hataPayi = toplam * 0.05;
+    const toplamHataPayli = toplam + hataPayi;
+
     setSonuc({
       betonFiyat,
       demirFiyat,
@@ -114,6 +118,7 @@ export default function App() {
       ongorulmayanGiderler,
       resmiIslemler,
       toplam,
+      toplamHataPayli,
     });
     setShowPopup(true);
   };
@@ -155,7 +160,7 @@ export default function App() {
               Toplam Maliyet
             </h2>
             <p className="text-5xl font-extrabold mb-8 text-indigo-700">
-              {sonuc.toplam.toLocaleString()} TL
+              {sonuc.toplamHataPayli.toLocaleString()} TL
             </p>
             <button
               onClick={() => setShowPopup(false)}
@@ -252,7 +257,7 @@ export default function App() {
           <hr className="border-indigo-300" />
 
           <p className="font-bold text-xl text-center text-indigo-900">
-            Toplam Maliyet: {sonuc.toplam.toLocaleString()} TL
+            Toplam Maliyet (Hata Payı %5 dahil): {sonuc.toplamHataPayli.toLocaleString()} TL
           </p>
         </div>
       )}
@@ -275,4 +280,4 @@ export default function App() {
       `}</style>
     </div>
   );
-      }
+        }

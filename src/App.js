@@ -1,137 +1,131 @@
 import React, { useState } from "react";
 
 export default function App() {
-  const [insaatAlani, setInsaatAlani] = useState("");
-  const [daireSayisi, setDaireSayisi] = useState("");
-  const [sonuc, setSonuc] = useState(null);
+  const [arsaM2, setArsaM2] = useState("");
+  const [insaatM2, setInsaatM2] = useState("");
 
-  const hesapla = () => {
-    const m2 = parseFloat(insaatAlani);
-    const daireSay = parseInt(daireSayisi);
-    if (isNaN(m2)) return;
+  const hesaplaMaliyet = () => {
+    const a = parseFloat(arsaM2);
+    const i = parseFloat(insaatM2);
 
-    // Ana kalemler
-    const betonM3 = m2 * 0.35;
-    const demirKg = m2 * 40;
-    const demirTon = demirKg / 1000;
-    const kalipDemirIscilik = m2 * 1500;
-    const cati = m2 * 1500;
+    if (isNaN(a) || isNaN(i)) return null;
 
-    // Duvar ve ona bağlı kalemler
-    const duvarAlanM2 = m2 - m2 * 0.2; // %80
-    const duvarMaliyet = duvarAlanM2 * 250;
-    const alciSivaBoyaM2 = duvarAlanM2 * 3;
-    const alciSivaBoyaMaliyet = alciSivaBoyaM2 * 350;
-    const mekanikTesisatMaliyet = duvarAlanM2 * 500;
+    const betonM3 = i * 0.35;
+    const betonFiyat = betonM3 * 2000;
 
-    // Zemin kaplama
-    const zeminKaplamaM2 = m2 * 0.6;
-    const zeminKaplamaMaliyet = zeminKaplamaM2 * 1200;
+    const demirTon = (i * 40) / 1000;
+    const demirFiyat = demirTon * 32000;
 
-    // Doğrama (3 pencere 1 kapı oranı)
-    const dogramaM2 = duvarAlanM2 * 0.1;
-    const pencereM2 = dogramaM2 * 0.75;
-    const kapiM2 = dogramaM2 * 0.25;
-    const celikKapiAdet = !isNaN(daireSay) && daireSay > 0 ? daireSay : 1;
+    const kalipDemirIscilik = i * 1500;
+    const cati = i * 1500;
 
-    const dogramaMaliyet =
-      pencereM2 * 1800 + kapiM2 * 1200 + celikKapiAdet * 9500;
+    const duvarM2 = i - i * 0.2;
+    const duvarFiyat = duvarM2 * 250;
 
-    // İnşaat öncesi giderler
-    const projeRuhsat = m2 * 250;
-    const zeminEtudu = m2 * 20;
-    const belediyeHarci = m2 * 30;
-    const oncesiGiderToplam = projeRuhsat + zeminEtudu + belediyeHarci;
+    const alciBoyaSivaM2 = duvarM2 * 3;
+    const alciBoyaSivaFiyat = alciBoyaSivaM2 * 350;
 
-    // Toplam maliyet
-    const toplamMaliyet =
+    const mekanik = duvarM2 * 500;
+
+    const zeminKaplama = i * 0.6 * 1200;
+
+    const pencereAdet = Math.ceil(i / 100); // Yaklaşık oran
+    const kapiAdet = Math.ceil(pencereAdet / 3);
+    const dogramaFiyat =
+      pencereAdet * 5000 + kapiAdet * 7000 + 1 * 15000; // çelik kapı dahil
+
+    const disCepheM2 = i / 6.25;
+    const disCepheFiyat = disCepheM2 * 1800;
+
+    const oncesiGider = i * 300;
+
+    const banyoSayisi = Math.ceil(i / 100); // Her 100 m2'ye 1 banyo
+    const montajFiyat = banyoSayisi * 15000;
+
+    const katSayisi = Math.ceil(i / a / 0.4);
+    const asansorAdet = Math.ceil(katSayisi / 4);
+    const asansorFiyat = asansorAdet * 350000;
+
+    const peyzajAlan = a * 0.2;
+    const peyzajFiyat = peyzajAlan * 300;
+
+    const toplam =
+      betonFiyat +
+      demirFiyat +
       kalipDemirIscilik +
-      duvarMaliyet +
-      alciSivaBoyaMaliyet +
-      mekanikTesisatMaliyet +
-      zeminKaplamaMaliyet +
-      dogramaMaliyet +
       cati +
-      oncesiGiderToplam;
+      duvarFiyat +
+      alciBoyaSivaFiyat +
+      mekanik +
+      zeminKaplama +
+      dogramaFiyat +
+      disCepheFiyat +
+      oncesiGider +
+      montajFiyat +
+      asansorFiyat +
+      peyzajFiyat;
 
-    setSonuc({
-      betonM3,
-      demirTon,
+    return {
+      betonFiyat,
+      demirFiyat,
       kalipDemirIscilik,
       cati,
-      duvarAlanM2,
-      duvarMaliyet,
-      alciSivaBoyaM2,
-      alciSivaBoyaMaliyet,
-      mekanikTesisatMaliyet,
-      zeminKaplamaM2,
-      zeminKaplamaMaliyet,
-      pencereM2,
-      kapiM2,
-      celikKapiAdet,
-      dogramaMaliyet,
-      projeRuhsat,
-      zeminEtudu,
-      belediyeHarci,
-      oncesiGiderToplam,
-      toplamMaliyet,
-    });
+      duvarFiyat,
+      alciBoyaSivaFiyat,
+      mekanik,
+      zeminKaplama,
+      dogramaFiyat,
+      disCepheFiyat,
+      oncesiGider,
+      montajFiyat,
+      asansorFiyat,
+      peyzajFiyat,
+      toplam,
+    };
   };
 
+  const sonuc = hesaplaMaliyet();
+
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start p-6">
-      <h1 className="text-2xl font-bold mb-4">🔧 İnşaat Maliyet Modülü</h1>
+    <div className="max-w-3xl mx-auto p-6 space-y-6 text-sm">
+      <h1 className="text-2xl font-bold text-center">🏗️ Maliyet Hesap Modülü</h1>
 
-      <input
-        type="number"
-        placeholder="İnşaat Alanı (m²)"
-        className="p-2 border rounded mb-4 w-full max-w-sm"
-        value={insaatAlani}
-        onChange={(e) => setInsaatAlani(e.target.value)}
-      />
-
-      <input
-        type="number"
-        placeholder="Daire Sayısı (Çelik Kapı Adedi)"
-        className="p-2 border rounded mb-4 w-full max-w-sm"
-        value={daireSayisi}
-        onChange={(e) => setDaireSayisi(e.target.value)}
-      />
-
-      <button
-        onClick={hesapla}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Hesapla
-      </button>
+      <div className="grid grid-cols-2 gap-4">
+        <input
+          type="number"
+          placeholder="Arsa Alanı (m²)"
+          value={arsaM2}
+          onChange={(e) => setArsaM2(e.target.value)}
+          className="p-2 border rounded"
+        />
+        <input
+          type="number"
+          placeholder="İnşaat Alanı (m²)"
+          value={insaatM2}
+          onChange={(e) => setInsaatM2(e.target.value)}
+          className="p-2 border rounded"
+        />
+      </div>
 
       {sonuc && (
-        <div className="mt-6 bg-white p-4 rounded shadow w-full max-w-2xl space-y-2 text-left">
-          <h2 className="text-xl font-semibold mb-2">🧱 Yapı Kalemleri</h2>
-          <p>🔹 Beton: {sonuc.betonM3.toFixed(2)} m³</p>
-          <p>🔹 Demir: {sonuc.demirTon.toFixed(2)} ton</p>
-          <p>🔹 Kalıp/Demir İşçilik: {sonuc.kalipDemirIscilik.toLocaleString()} TL</p>
-          <p>🔹 Çatı Maliyeti: {sonuc.cati.toLocaleString()} TL</p>
-          <p>🧱 Duvar Alanı (%80): {sonuc.duvarAlanM2.toFixed(2)} m² → {sonuc.duvarMaliyet.toLocaleString()} TL</p>
-          <p>🎨 Alçı + Sıva + Boya: {sonuc.alciSivaBoyaM2.toFixed(2)} m² → {sonuc.alciSivaBoyaMaliyet.toLocaleString()} TL</p>
-          <p>🔌🚿 Elektrik + Su Tesisatı: {sonuc.mekanikTesisatMaliyet.toLocaleString()} TL</p>
-          <p>🧼 Zemin Kaplama: {sonuc.zeminKaplamaM2.toFixed(2)} m² → {sonuc.zeminKaplamaMaliyet.toLocaleString()} TL</p>
-
-          <h2 className="text-xl font-semibold mt-4">🚪 Doğramalar</h2>
-          <p>🪟 Pencere Alanı: {sonuc.pencereM2.toFixed(2)} m² (1800 TL/m²)</p>
-          <p>🚪 Kapı Alanı: {sonuc.kapiM2.toFixed(2)} m² (1200 TL/m²)</p>
-          <p>🛡️ Çelik Kapı Adedi: {sonuc.celikKapiAdet} (9500 TL/adet)</p>
-          <p>💸 Doğrama Maliyeti: {sonuc.dogramaMaliyet.toLocaleString()} TL</p>
-
-          <h2 className="text-xl font-semibold mt-4">📄 İnşaat Öncesi Giderler</h2>
-          <p>📌 Proje + Ruhsat: {sonuc.projeRuhsat.toLocaleString()} TL</p>
-          <p>📌 Zemin Etüdü: {sonuc.zeminEtudu.toLocaleString()} TL</p>
-          <p>📌 Belediye Harcı: {sonuc.belediyeHarci.toLocaleString()} TL</p>
-          <p className="font-semibold">Toplam Öncesi Gider: {sonuc.oncesiGiderToplam.toLocaleString()} TL</p>
-
+        <div className="bg-white shadow p-4 rounded space-y-2">
+          <p>Beton: {sonuc.betonFiyat.toLocaleString()} TL</p>
+          <p>Demir: {sonuc.demirFiyat.toLocaleString()} TL</p>
+          <p>Kalıp/Demir İşçilik: {sonuc.kalipDemirIscilik.toLocaleString()} TL</p>
+          <p>Çatı: {sonuc.cati.toLocaleString()} TL</p>
+          <p>Duvar: {sonuc.duvarFiyat.toLocaleString()} TL</p>
+          <p>Alçı-Sıva-Boya: {sonuc.alciBoyaSivaFiyat.toLocaleString()} TL</p>
+          <p>Mekanik Tesisat: {sonuc.mekanik.toLocaleString()} TL</p>
+          <p>Zemin Kaplama: {sonuc.zeminKaplama.toLocaleString()} TL</p>
+          <p>Doğrama: {sonuc.dogramaFiyat.toLocaleString()} TL</p>
+          <p>Dış Cephe: {sonuc.disCepheFiyat.toLocaleString()} TL</p>
+          <p>İnşaat Öncesi Gider: {sonuc.oncesiGider.toLocaleString()} TL</p>
+          <p>Banyo + Montaj Malzemesi: {sonuc.montajFiyat.toLocaleString()} TL</p>
+          <p>Asansör: {sonuc.asansorFiyat.toLocaleString()} TL</p>
+          <p>Peyzaj: {sonuc.peyzajFiyat.toLocaleString()} TL</p>
           <hr />
           <p className="font-bold text-lg">
-            💰 Toplam Maliyet: {sonuc.toplamMaliyet.toLocaleString()} TL
+            Toplam Maliyet: {sonuc.toplam.toLocaleString()} TL
           </p>
         </div>
       )}

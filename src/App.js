@@ -8,31 +8,37 @@ export default function App() {
     const m2 = parseFloat(insaatAlani);
     if (isNaN(m2)) return;
 
-    // Temel kalemler
+    // Ana Kalemler
     const betonM3 = m2 * 0.35;
     const demirKg = m2 * 40;
     const demirTon = demirKg / 1000;
     const kalipDemirIscilik = m2 * 1500;
     const cati = m2 * 1500;
 
-    // Duvar hesabı (yüzey alanı)
+    // Duvar ve ona bağlı kalemler
     const duvarAlanM2 = m2 - (m2 * 0.2); // %80
     const duvarMaliyet = duvarAlanM2 * 250;
-
     const alciSivaBoyaM2 = duvarAlanM2 * 3;
     const alciSivaBoyaMaliyet = alciSivaBoyaM2 * 350;
+    const mekanikTesisatMaliyet = duvarAlanM2 * 500;
 
-    // İnşaat Öncesi Giderler
+    // Zemin kaplama (60% x 1200 TL)
+    const zeminKaplamaM2 = m2 * 0.6;
+    const zeminKaplamaMaliyet = zeminKaplamaM2 * 1200;
+
+    // İnşaat öncesi giderler
     const projeRuhsat = m2 * 250;
     const zeminEtudu = m2 * 20;
     const belediyeHarci = m2 * 30;
     const oncesiGiderToplam = projeRuhsat + zeminEtudu + belediyeHarci;
 
-    // Toplam
+    // Toplam maliyet
     const toplamMaliyet =
       kalipDemirIscilik +
       duvarMaliyet +
       alciSivaBoyaMaliyet +
+      mekanikTesisatMaliyet +
+      zeminKaplamaMaliyet +
       cati +
       oncesiGiderToplam;
 
@@ -45,6 +51,9 @@ export default function App() {
       duvarMaliyet,
       alciSivaBoyaM2,
       alciSivaBoyaMaliyet,
+      mekanikTesisatMaliyet,
+      zeminKaplamaM2,
+      zeminKaplamaMaliyet,
       projeRuhsat,
       zeminEtudu,
       belediyeHarci,
@@ -81,6 +90,8 @@ export default function App() {
           <p>🔹 Çatı Maliyeti: {sonuc.cati.toLocaleString()} TL</p>
           <p>🧱 Duvar Alanı (%80): {sonuc.duvarAlanM2.toFixed(2)} m² → {sonuc.duvarMaliyet.toLocaleString()} TL</p>
           <p>🎨 Alçı + Sıva + Boya: {sonuc.alciSivaBoyaM2.toFixed(2)} m² → {sonuc.alciSivaBoyaMaliyet.toLocaleString()} TL</p>
+          <p>🔌🚿 Elektrik + Su Tesisatı: {sonuc.mekanikTesisatMaliyet.toLocaleString()} TL</p>
+          <p>🧼 Zemin Kaplama: {sonuc.zeminKaplamaM2.toFixed(2)} m² → {sonuc.zeminKaplamaMaliyet.toLocaleString()} TL</p>
 
           <h2 className="text-xl font-semibold mt-4">📄 İnşaat Öncesi Giderler</h2>
           <p>📌 Proje + Ruhsat: {sonuc.projeRuhsat.toLocaleString()} TL</p>

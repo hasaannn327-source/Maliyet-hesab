@@ -22,7 +22,6 @@ export default function MaliyetModulu() {
     setLoading(true);
     setSonuc(null);
 
-    // Simüle etmek için 1.5 saniye bekletelim
     setTimeout(() => {
       const beton = betonM3PerM2 * sayi;
       const demir = demirKgPerM2 * sayi;
@@ -35,6 +34,9 @@ export default function MaliyetModulu() {
       setLoading(false);
     }, 1500);
   };
+
+  const formatNumber = (num) =>
+    num.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div className="max-w-md mx-auto p-4 border rounded shadow mt-10 font-sans">
@@ -67,12 +69,14 @@ export default function MaliyetModulu() {
         <div className="mt-6 bg-gray-100 p-4 rounded">
           <h2 className="font-semibold mb-2">Sonuçlar:</h2>
           <ul className="list-disc list-inside">
-            <li>Beton: {sonuc.beton.toFixed(2)} m³</li>
-            <li>Demir: {sonuc.demir.toFixed(2)} kg</li>
-            <li>İşçilik (Kalıp + Demir): {sonuc.iscilik.toFixed(2)} TL</li>
-            <li>Çatı: {sonuc.cati.toFixed(2)} TL</li>
-            <li>Duvar: {sonuc.duvar.toFixed(2)} TL</li>
-            <li className="font-bold mt-2">Toplam İşçilik + Çatı + Duvar: {sonuc.toplam.toFixed(2)} TL</li>
+            <li>Beton: {formatNumber(sonuc.beton)} m³</li>
+            <li>Demir: {formatNumber(sonuc.demir)} kg</li>
+            <li>İşçilik (Kalıp + Demir): {formatNumber(sonuc.iscilik)} TL</li>
+            <li>Çatı: {formatNumber(sonuc.cati)} TL</li>
+            <li>Duvar: {formatNumber(sonuc.duvar)} TL</li>
+            <li className="font-bold mt-2">
+              Toplam İşçilik + Çatı + Duvar: {formatNumber(sonuc.toplam)} TL
+            </li>
           </ul>
         </div>
       )}

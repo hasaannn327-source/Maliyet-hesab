@@ -1,73 +1,83 @@
 import React, { useState } from "react";
 
-export default function MaliyetHesap() { const [brutAlan, setBrutAlan] = useState(0);
+export default function MaliyetHesaplama() {
+  const [brutAlan, setBrutAlan] = useState(0);
+  const [kalemler, setKalemler] = useState([
+    { isim: "Hafriyat", birimFiyat: 120 },
+    { isim: "Kalıp İşçiliği", birimFiyat: 350 },
+    { isim: "Demir İşçiliği", birimFiyat: 300 },
+    { isim: "Beton", birimFiyat: 500 },
+    { isim: "Sıva", birimFiyat: 150 },
+    { isim: "Seramik", birimFiyat: 200 },
+    { isim: "Elektrik Tesisatı", birimFiyat: 180 },
+    { isim: "Su Tesisatı", birimFiyat: 170 },
+    { isim: "Boya", birimFiyat: 120 },
+  ]);
 
-const [kalemler, setKalemler] = useState([ { ad: "Hafriyat", birim: "m³", miktar: 1.2, fiyat: 200 }, { ad: "Beton", birim: "m³", miktar: 0.3, fiyat: 1200 }, { ad: "Demir", birim: "kg", miktar: 100, fiyat: 25 }, { ad: "Kalıp", birim: "m²", miktar: 2, fiyat: 100 }, { ad: "Duvar", birim: "m²", miktar: 1.5, fiyat: 80 }, { ad: "Sıva", birim: "m²", miktar: 2, fiyat: 40 }, { ad: "Elektrik", birim: "m²", miktar: 1, fiyat: 100 }, { ad: "Mekanik", birim: "m²", miktar: 1, fiyat: 150 }, { ad: "Boya", birim: "m²", miktar: 2, fiyat: 35 }, ]);
+  const handleFiyatDegis = (index, yeniDeger) => {
+    const yeniListe = [...kalemler];
+    yeniListe[index].birimFiyat = Number(yeniDeger);
+    setKalemler(yeniListe);
+  };
 
-const genelToplam = kalemler.reduce( (acc, item) => acc + item.miktar * item.fiyat, 0 );
+  const toplamMaliyet = kalemler.reduce(
+    (acc, kalem) => acc + kalem.birimFiyat * brutAlan,
+    0
+  );
+  const karliMaliyet = toplamMaliyet * 1.2;
 
-const toplamMaliyet = genelToplam * brutAlan; const karliMaliyet = toplamMaliyet * 1.2; // %20 kar ekliyoruz
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h2 className="text-3xl font-bold mb-4 text-center text-gray-800">
+        İnşaat Maliyet Hesaplama
+      </h2>
 
-const handleChange = (index, key, value) => { const yeniKalemler = [...kalemler]; yeniKalemler[index][key] = parseFloat(value); setKalemler(yeniKalemler); };
+      <div className="mb-6 bg-white shadow-md rounded-xl p-4">
+        <label className="block text-sm font-semibold mb-2 text-gray-700">
+          Toplam Brüt İnşaat Alanı (m²)
+        </label>
+        <input
+          type="number"
+          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          value={brutAlan}
+          onChange={(e) => setBrutAlan(Number(e.target.value))}
+          placeholder="Örneğin: 5000"
+        />
+      </div>
 
-return ( <div className="p-4 max-w-5xl mx-auto space-y-4"> <h2 className="text-xl font-bold">İnşaat Maliyet Hesabı (m² Başına)</h2>
-
-<div className="flex gap-2 items-center">
-    <label className="font-medium">Toplam Brüt İnşaat Alanı (m²):</label>
-    <input
-      type="number"
-      value={brutAlan}
-      onChange={(e) => setBrutAlan(parseFloat(e.target.value) || 0)}
-      className="border p-2 w-40 rounded"
-    />
-  </div>
-
-  <table className="w-full border text-sm">
-    <thead>
-      <tr className="bg-gray-200">
-        <th className="border px-2 py-1">Kalem</th>
-        <th className="border px-2 py-1">Birim</th>
-        <th className="border px-2 py-1">Miktar (1 m² için)</th>
-        <th className="border px-2 py-1">Birim Fiyat (TL)</th>
-        <th className="border px-2 py-1">1 m² Tutar (TL)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {kalemler.map((item, i) => (
-        <tr key={i}>
-          <td className="border px-2 py-1">{item.ad}</td>
-          <td className="border px-2 py-1">{item.birim}</td>
-          <td className="border px-2 py-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {kalemler.map((kalem, index) => (
+          <div
+            key={index}
+            className="bg-white shadow-sm rounded-lg p-4 border border-gray-200"
+          >
+            <label className="block text-sm text-gray-600 mb-1">
+              {kalem.isim} (₺ / m²)
+            </label>
             <input
               type="number"
-              value={item.miktar}
-              onChange={(e) => handleChange(i, "miktar", e.target.value)}
-              className="w-20 p-1 border rounded"
+              className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={kalem.birimFiyat}
+              onChange={(e) => handleFiyatDegis(index, e.target.value)}
             />
-          </td>
-          <td className="border px-2 py-1">
-            <input
-              type="number"
-              value={item.fiyat}
-              onChange={(e) => handleChange(i, "fiyat", e.target.value)}
-              className="w-20 p-1 border rounded"
-            />
-          </td>
-          <td className="border px-2 py-1 text-right">
-            {Number(item.miktar * item.fiyat).toFixed(2)} TL
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+          </div>
+        ))}
+      </div>
 
-  <div className="mt-4 space-y-2">
-    <p className="font-medium">1 m² İnşaat Maliyeti: <b>{genelToplam.toFixed(2)} TL</b></p>
-    <p className="font-medium">Toplam Maliyet ({brutAlan} m²): <b>{toplamMaliyet.toFixed(2)} TL</b></p>
-    <p className="font-medium text-green-700">Genel Toplam (+%20 kar): <b>{karliMaliyet.toFixed(2)} TL</b></p>
-  </div>
-</div>
-
-); }
-
-                    
+      <div className="mt-8 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-xl">
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">
+          Hesap Sonucu
+        </h3>
+        <p className="text-gray-700">
+          <strong>Toplam Maliyet:</strong> {toplamMaliyet.toLocaleString()} ₺
+        </p>
+        <p className="text-gray-700 text-lg">
+          <strong>%20 Kâr Dahil:</strong>{" "}
+          <span className="text-green-600 font-bold text-xl">
+            {karliMaliyet.toLocaleString()} ₺
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+}

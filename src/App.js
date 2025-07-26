@@ -1,90 +1,70 @@
 import React, { useState } from "react";
 
-export default function MaliyetModulu() {
-  const [m2, setM2] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sonuc, setSonuc] = useState(null);
+export default function App() { const [sayi, setSayi] = useState(0); const [loading, setLoading] = useState(false); const [showResult, setShowResult] = useState(false); const [ekstraGiderEkle, setEkstraGiderEkle] = useState(false); const [sonuc, setSonuc] = useState({});
 
-  // Sabit değerler
-  const betonM3PerM2 = 0.35;
-  const demirKgPerM2 = 40;
-  const iscilikPerM2 = 1500; // TL kalıp + demir işçiliği
-  const catiPerM2 = 1500; // TL
-  const duvarPerM2 = 320; // TL
+const hesapla = () => { setLoading(true); setShowResult(false); setTimeout(() => { const beton = sayi * 0.35; const demirKg = sayi * 40; const demirTon = demirKg / 1000; const kalipIscilik = sayi * 1500; const cati = sayi * 1500; const duvar = sayi * 320; const toplam = kalipIscilik + cati + duvar;
 
-  const hesapla = () => {
-    const sayi = parseFloat(m2);
-    if (isNaN(sayi) || sayi <= 0) {
-      alert("Lütfen geçerli bir m² değeri giriniz.");
-      return;
-    }
+const projeGider = 150000;
+  const zeminEtudu = 120000;
+  const ruhsatPerM2 = 8;
+  const ruhsatHarc = sayi * ruhsatPerM2;
+  const yapiDenetim = 80000;
+  const hafriyatPerM2 = 900;
+  const hafriyat = sayi * hafriyatPerM2;
 
-    setLoading(true);
-    setSonuc(null);
+  const ekstraGiderler = ekstraGiderEkle ? (
+    zeminEtudu + projeGider + ruhsatHarc + yapiDenetim + hafriyat
+  ) : 0;
 
-    setTimeout(() => {
-      const beton = betonM3PerM2 * sayi;
-      const demir = demirKgPerM2 * sayi;
-      const iscilik = iscilikPerM2 * sayi;
-      const cati = catiPerM2 * sayi;
-      const duvar = duvarPerM2 * sayi;
-      const toplam = iscilik + cati + duvar;
+  const genelToplam = toplam + ekstraGiderler;
 
-      setSonuc({ beton, demir, iscilik, cati, duvar, toplam });
-      setLoading(false);
-    }, 1500);
-  };
+  setSonuc({ beton, demirKg, demirTon, kalipIscilik, cati, duvar, toplam, 
+    projeGider, zeminEtudu, ruhsatHarc, yapiDenetim, hafriyat, ekstraGiderler, genelToplam });
+  setLoading(false);
+  setShowResult(true);
+}, 1000);
 
-  const formatNumber = (num) =>
-    num.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
 
-  const formatBinTL = (num) => {
-    const bin = num / 1000;
-    return `${bin.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (bin TL)`;
-  };
+const formatBinTL = (deger) => { const sayi = Math.round(deger); return sayi.toLocaleString("tr-TR") + " (" + yaziylaYaz(sayi) + ") TL"; };
 
-  return (
-    <div className="max-w-md mx-auto p-4 border rounded shadow mt-10 font-sans">
-      <h1 className="text-xl font-bold mb-4">Maliyet Hesaplama Modülü</h1>
+const yaziylaYaz = (sayi) => { const formatter = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }); const yazi = sayi.toLocaleString('tr-TR'); // Gerçek yazıya çevirme yerine basit örnek format kullanalım if (sayi >= 1000000) return Math.round(sayi / 1000000) + " milyon"; if (sayi >= 1000) return Math.round(sayi / 1000) + " bin"; return sayi.toString(); };
 
-      <label className="block mb-2 font-semibold" htmlFor="m2">
-        İnşaat Alanı (m²):
-      </label>
-      <input
-        id="m2"
-        type="number"
-        min="0"
-        value={m2}
-        onChange={(e) => setM2(e.target.value)}
-        placeholder="Metrekare giriniz"
-        className="w-full p-2 border rounded mb-4"
-      />
+return ( <div className="p-6 max-w-2xl mx-auto"> <h1 className="text-2xl font-bold mb-4">Maliyet Hesaplama</h1>
 
-      <button
-        onClick={hesapla}
-        disabled={loading}
-        className={`w-full p-2 text-white font-semibold rounded ${
-          loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-        }`}
-      >
-        {loading ? "Hesaplanıyor..." : "Hesapla"}
-      </button>
+<input
+    type="number"
+    value={sayi}
+    onChange={(e) => setSayi(parseFloat(e.target.value))}
+    className="border p-2 w-full mb-4"
+    placeholder="İnşaat alanı (m²)"
+  />
 
-      {sonuc && (
-        <div className="mt-6 bg-gray-100 p-4 rounded">
-          <h2 className="font-semibold mb-2">Sonuçlar:</h2>
-          <ul className="list-disc list-inside">
-            <li>Beton: {formatNumber(sonuc.beton)} m³</li>
-            <li>Demir: {formatNumber(sonuc.demir / 1000)} ton</li>
-            <li>İşçilik (Kalıp + Demir): {formatBinTL(sonuc.iscilik)}</li>
-            <li>Çatı: {formatBinTL(sonuc.cati)}</li>
-            <li>Duvar: {formatBinTL(sonuc.duvar)}</li>
-            <li className="font-bold mt-2">
-              Toplam İşçilik + Çatı + Duvar: {formatBinTL(sonuc.toplam)}
-            </li>
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-}
+  <label className="flex items-center space-x-2 mb-4">
+    <input
+      type="checkbox"
+      checked={ekstraGiderEkle}
+      onChange={(e) => setEkstraGiderEkle(e.target.checked)}
+    />
+    <span>İnşaat öncesi giderleri dahil et</span>
+  </label>
+
+  <button
+    onClick={hesapla}
+    className="bg-blue-600 text-white px-4 py-2 rounded"
+  >
+    Hesapla
+  </button>
+
+  {loading && <p className="mt-4">Hesaplanıyor...</p>}
+
+  {showResult && (
+    <div className="mt-6 space-y-2">
+      <h2 className="text-xl font-semibold">Sonuçlar</h2>
+      <ul className="list-disc list-inside space-y-1">
+        <li>Beton: {sonuc.beton.toFixed(2)} m³</li>
+        <li>Demir: {sonuc.demirKg.toFixed(0)} kg ({sonuc.demirTon.toFixed(2)} ton)</li>
+        <li>Kalıp/Demir İşçiliği: {formatBinTL(sonuc.kalipIscilik)}</li>
+        <li>Çatı: {formatBinTL(sonuc.cati)}</
+
+  

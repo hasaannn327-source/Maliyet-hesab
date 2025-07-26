@@ -7,7 +7,6 @@ export default function MaliyetModulu() {
   const [includeExtras, setIncludeExtras] = useState(false);
   const [sonuc, setSonuc] = useState(null);
 
-  // Hesaplama fonksiyonu
   const hesapla = () => {
     const alan = parseFloat(m2);
     if (isNaN(alan) || alan <= 0) {
@@ -55,7 +54,6 @@ export default function MaliyetModulu() {
     }, 10000);
   };
 
-  // TL formatlama
   const formatTL = (num) => {
     if (!num) return "0 TL";
     return num.toLocaleString("tr-TR", { maximumFractionDigits: 0 }) + " TL";
@@ -91,12 +89,12 @@ export default function MaliyetModulu() {
       </button>
 
       {loading && (
-        <div className="text-center mt-6">
-          <p className="mb-2 text-lg font-semibold">Hesaplanıyor, lütfen bekleyin...</p>
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
           <img
             src="/dancing-dog.gif"
             alt="Yükleniyor"
-            className="mx-auto w-48 h-48 animate-bounce"
+            className="w-full h-full object-contain"
+            style={{ animation: "none" }}
           />
         </div>
       )}

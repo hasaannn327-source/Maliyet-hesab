@@ -89,12 +89,29 @@ export default function MaliyetModulu() {
       </button>
 
       {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
           <img
             src="/dancing-dog.gif"
             alt="Yükleniyor"
-            className="w-full h-full object-contain"
-            style={{ animation: "none" }}
+            style={{
+              maxWidth: "80%",
+              maxHeight: "80%",
+              objectFit: "contain",
+              animation: "none",
+            }}
           />
         </div>
       )}
@@ -128,4 +145,4 @@ export default function MaliyetModulu() {
       )}
     </div>
   );
-}
+              }

@@ -41,14 +41,19 @@ export default function App() {
     // Zemin Kaplama
     const zeminKaplama = i * 0.6 * 1200;
 
-    // Doğrama (3 pencere + 1 kapı oranı)
-    const pencereAdet = Math.ceil(i / 100);
-    const kapiAdet = Math.ceil(pencereAdet / 3);
-    const dogramaFiyat = pencereAdet * 5000 + kapiAdet * 7000 + 15000;
+    // Doğrama (Ortalama daireye göre hesaplama)
+    const ortalamaDaireM2 = 100; // Ortalama daire m2
+    const daireSayisi = Math.ceil(i / ortalamaDaireM2);
+
+    const pencereAdet = daireSayisi * 6;
+    const kapiAdet = daireSayisi * 5;
+    const celikKapiAdet = daireSayisi;
+
+    const dogramaFiyat = pencereAdet * 7000 + kapiAdet * 10000 + celikKapiAdet * 25000;
 
     // Dış Cephe
     const disCepheM2 = i / 6.25;
-    const disCepheFiyat = disCepheM2 * 1800;
+    const disCepheFiyat = disCepheM2 * 2200;
 
     // İnşaat Öncesi Giderler
     const oncesiGider = i * 300;
@@ -67,7 +72,7 @@ export default function App() {
     const peyzajFiyat = peyzajAlan * 300;
 
     // Öngörülmeyen Giderler ve Personel Ödemeleri
-    const ongorulmayanGiderler = 1000000; // 1 milyon TL
+    const ongorulmayanGiderler = 1000000;
 
     // Resmi İşlemler
     const resmiIslemler = 30000;
@@ -230,4 +235,4 @@ export default function App() {
       )}
     </div>
   );
-        }
+            }

@@ -13,45 +13,66 @@ export default function App() {
       return;
     }
 
+    // Beton
     const betonM3 = i * 0.35;
-    const betonFiyat = betonM3 * 2000;
+    const betonFiyat = betonM3 * 3000;
 
-    const demirTon = (i * 40) / 1000;
-    const demirFiyat = demirTon * 32000;
+    // Demir
+    const demirTon = i * 0.04;
+    const demirFiyat = demirTon * 27000;
 
+    // Kalıp/Demir işçilik
     const kalipDemirIscilik = i * 1500;
+
+    // Çatı
     const cati = i * 1500;
 
+    // Duvar
     const duvarM2 = i - i * 0.2;
     const duvarFiyat = duvarM2 * 250;
 
+    // Alçı-Sıva-Boya
     const alciBoyaSivaM2 = duvarM2 * 3;
     const alciBoyaSivaFiyat = alciBoyaSivaM2 * 350;
 
+    // Mekanik Tesisat
     const mekanik = duvarM2 * 500;
 
+    // Zemin Kaplama
     const zeminKaplama = i * 0.6 * 1200;
 
+    // Doğrama (3 pencere + 1 kapı oranı)
     const pencereAdet = Math.ceil(i / 100);
     const kapiAdet = Math.ceil(pencereAdet / 3);
-    const dogramaFiyat =
-      pencereAdet * 5000 + kapiAdet * 7000 + 1 * 15000; // çelik kapı dahil
+    const dogramaFiyat = pencereAdet * 5000 + kapiAdet * 7000 + 15000;
 
+    // Dış Cephe
     const disCepheM2 = i / 6.25;
     const disCepheFiyat = disCepheM2 * 1800;
 
+    // İnşaat Öncesi Giderler
     const oncesiGider = i * 300;
 
+    // Banyo + Mutfak Donanımı + Montaj
     const banyoSayisi = Math.ceil(i / 100);
     const montajFiyat = banyoSayisi * 15000;
 
+    // Kat Sayısı Hesabı ve Asansör
     const katSayisi = Math.ceil(i / a / 0.4);
     const asansorAdet = Math.ceil(katSayisi / 4);
     const asansorFiyat = asansorAdet * 350000;
 
+    // Peyzaj
     const peyzajAlan = a * 0.2;
     const peyzajFiyat = peyzajAlan * 300;
 
+    // Öngörülmeyen Giderler ve Personel Ödemeleri
+    const ongorulmayanGiderler = 1000000; // 1 milyon TL
+
+    // Resmi İşlemler
+    const resmiIslemler = 30000;
+
+    // Toplam Maliyet
     const toplam =
       betonFiyat +
       demirFiyat +
@@ -66,7 +87,9 @@ export default function App() {
       oncesiGider +
       montajFiyat +
       asansorFiyat +
-      peyzajFiyat;
+      peyzajFiyat +
+      ongorulmayanGiderler +
+      resmiIslemler;
 
     setSonuc({
       betonFiyat,
@@ -83,6 +106,8 @@ export default function App() {
       montajFiyat,
       asansorFiyat,
       peyzajFiyat,
+      ongorulmayanGiderler,
+      resmiIslemler,
       toplam,
     });
   };
@@ -116,6 +141,11 @@ export default function App() {
 
       {sonuc && (
         <div className="space-y-4 max-w-2xl mx-auto">
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">📄 İnşaat Öncesi Giderler</h2>
+            <p>🔹 Maliyet: {sonuc.oncesiGider.toLocaleString()} TL</p>
+          </div>
+
           <div className="bg-white shadow rounded p-4">
             <h2 className="font-semibold mb-2">🧱 Beton</h2>
             <p>🔹 Maliyet: {sonuc.betonFiyat.toLocaleString()} TL</p>
@@ -167,11 +197,6 @@ export default function App() {
           </div>
 
           <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">📄 İnşaat Öncesi Giderler</h2>
-            <p>🔹 Maliyet: {sonuc.oncesiGider.toLocaleString()} TL</p>
-          </div>
-
-          <div className="bg-white shadow rounded p-4">
             <h2 className="font-semibold mb-2">🛁 Banyo + Mutfak Donanımı (Montaj Malzemesi Dahil)</h2>
             <p>🔹 Maliyet: {sonuc.montajFiyat.toLocaleString()} TL</p>
           </div>
@@ -184,6 +209,16 @@ export default function App() {
           <div className="bg-white shadow rounded p-4">
             <h2 className="font-semibold mb-2">🌿 Peyzaj / Çevre Düzenlemesi</h2>
             <p>🔹 Maliyet: {sonuc.peyzajFiyat.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">💼 Öngörülmeyen Giderler ve Personel Ödemeleri</h2>
+            <p>🔹 Maliyet: {sonuc.ongorulmayanGiderler.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🏛️ Resmi İşlemler</h2>
+            <p>🔹 Maliyet: {sonuc.resmiIslemler.toLocaleString()} TL</p>
           </div>
 
           <hr />

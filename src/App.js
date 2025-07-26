@@ -38,6 +38,11 @@ export default function MaliyetModulu() {
   const formatNumber = (num) =>
     num.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  const formatBinTL = (num) => {
+    const bin = num / 1000;
+    return `${bin.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (bin TL)`;
+  };
+
   return (
     <div className="max-w-md mx-auto p-4 border rounded shadow mt-10 font-sans">
       <h1 className="text-xl font-bold mb-4">Maliyet Hesaplama Modülü</h1>
@@ -70,12 +75,12 @@ export default function MaliyetModulu() {
           <h2 className="font-semibold mb-2">Sonuçlar:</h2>
           <ul className="list-disc list-inside">
             <li>Beton: {formatNumber(sonuc.beton)} m³</li>
-            <li>Demir: {formatNumber(sonuc.demir)} kg</li>
-            <li>İşçilik (Kalıp + Demir): {formatNumber(sonuc.iscilik)} TL</li>
-            <li>Çatı: {formatNumber(sonuc.cati)} TL</li>
-            <li>Duvar: {formatNumber(sonuc.duvar)} TL</li>
+            <li>Demir: {formatNumber(sonuc.demir / 1000)} ton</li>
+            <li>İşçilik (Kalıp + Demir): {formatBinTL(sonuc.iscilik)}</li>
+            <li>Çatı: {formatBinTL(sonuc.cati)}</li>
+            <li>Duvar: {formatBinTL(sonuc.duvar)}</li>
             <li className="font-bold mt-2">
-              Toplam İşçilik + Çatı + Duvar: {formatNumber(sonuc.toplam)} TL
+              Toplam İşçilik + Çatı + Duvar: {formatBinTL(sonuc.toplam)}
             </li>
           </ul>
         </div>

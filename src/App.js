@@ -1,102 +1,63 @@
 import React, { useState } from "react";
 
-export default function MaliyetModulu() {
+export default function App() {
   const [m2, setM2] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showSonuc, setShowSonuc] = useState(false);
-  const [includeExtras, setIncludeExtras] = useState(false);
-  const [sonuc, setSonuc] = useState(null);
+  const [result, setResult] = useState(null);
+  const [showGiderler, setShowGiderler] = useState(false);
 
-  const hesapla = () => {
-    const alan = parseFloat(m2);
-    if (isNaN(alan) || alan <= 0) {
-      alert("Lütfen geçerli bir metrekare girin!");
-      return;
-    }
-
+  const handleSubmit = () => {
     setLoading(true);
-    setShowSonuc(false);
-
     setTimeout(() => {
-      const beton = alan * 0.35;
-      const demir = alan * 40;
-      const iscilik = alan * 1500;
-      const cati = alan * 1500;
-      const duvar = alan * 320;
+      const insaatBeton = m2 * 0.35;
+      const insaatDemir = m2 * 40;
+      const kalipDemirIscilik = m2 * 1500;
+      const cati = m2 * 1500;
+      const duvar = m2 * 320;
 
-      let ekstra = {};
-      if (includeExtras) {
-        ekstra = {
-          zeminEtudu: 10000,
-          projeCizimi: 30000,
-          ruhsatHarci: alan * 8,
-          yapiDenetim: alan * 60,
-          hafriyat: 40000,
-        };
-      }
+      const toplam =
+        kalipDemirIscilik + cati + duvar;
 
-      const toplamEkstra = Object.values(ekstra).reduce((a, b) => a + b, 0);
+      const giderler = {
+        proje: 15000,
+        jeolojikEtud: 8000,
+        insaatMu: 10000,
+        yapiDenetim: 15000,
+        ruhsatHarci: 12000,
+        belediyeHizmet: 5000,
+        genelToplam: toplam + 15000 + 8000 + 10000 + 15000 + 12000 + 5000,
+      };
 
-      const toplamMaliyet = iscilik + cati + duvar + toplamEkstra;
-
-      setSonuc({
-        beton,
-        demir,
-        iscilik,
+      setResult({
+        beton: insaatBeton.toFixed(2),
+        demir: insaatDemir,
+        kalip: kalipDemirIscilik,
         cati,
         duvar,
-        ekstra,
-        toplamMaliyet,
+        toplam,
+        giderler,
       });
 
       setLoading(false);
-      setShowSonuc(true);
     }, 10000);
   };
 
-  const formatTL = (num) => {
-    if (!num) return "0 TL";
-    return num.toLocaleString("tr-TR", { maximumFractionDigits: 0 }) + " TL";
-  };
-
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">Maliyet Modülü</h1>
-
-      <input
-        type="number"
-        placeholder="İnşaat alanı (m²)"
-        value={m2}
-        onChange={(e) => setM2(e.target.value)}
-        className="w-full p-2 border rounded mb-4"
-      />
-
-      <label className="inline-flex items-center mb-4">
-        <input
-          type="checkbox"
-          className="mr-2"
-          checked={includeExtras}
-          onChange={(e) => setIncludeExtras(e.target.checked)}
-        />
-        İnşaat öncesi giderleri dahil et
-      </label>
-
-      <button
-        onClick={hesapla}
-        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-      >
-        Hesapla
-      </button>
-
+    <div className="min-h-screen bg-gray-100 p-6">
       {loading && (
         <div
           style={{
             position: "fixed",
             top: 0,
             left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.8)",
+            right: 0,
+            bottom: 0,
+            width: "100%",
+            height: "100%",
+            margin: 0,
+            padding: 0,
+            overflow: "hidden",
+            backgroundColor: "rgba(0,0,0,0.85)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -107,8 +68,8 @@ export default function MaliyetModulu() {
             src="/dancing-dog.gif"
             alt="Yükleniyor"
             style={{
-              maxWidth: "80%",
-              maxHeight: "80%",
+              maxWidth: "90%",
+              maxHeight: "90%",
               objectFit: "contain",
               animation: "none",
             }}
@@ -116,33 +77,70 @@ export default function MaliyetModulu() {
         </div>
       )}
 
-      {showSonuc && !loading && sonuc && (
-        <div className="mt-6 bg-gray-100 p-4 rounded shadow">
-          <h2 className="text-xl font-semibold mb-3">Sonuçlar</h2>
-          <ul className="list-disc list-inside space-y-1 text-gray-700">
-            <li>Beton: {sonuc.beton.toFixed(2)} m³</li>
-            <li>
-              Demir: {sonuc.demir.toFixed(2)} kg ({(sonuc.demir / 1000).toFixed(2)} ton)
-            </li>
-            <li>İşçilik (Kalıp + Demir): {formatTL(sonuc.iscilik)}</li>
-            <li>Çatı: {formatTL(sonuc.cati)}</li>
-            <li>Duvar: {formatTL(sonuc.duvar)}</li>
+      <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold mb-4 text-center">Maliyet Hesap</h1>
+        <input
+          type="number"
+          value={m2}
+          onChange={(e) => setM2(e.target.value)}
+          placeholder="İnşaat Alanı (m²)"
+          className="w-full border p-2 mb-4 rounded"
+        />
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
+          Hesapla
+        </button>
 
-            {includeExtras && (
-              <>
-                <li className="mt-3 font-semibold">İnşaat Öncesi Giderler:</li>
-                <li>Zemin Etüdü: {formatTL(sonuc.ekstra.zeminEtudu)}</li>
-                <li>Proje Çizimi: {formatTL(sonuc.ekstra.projeCizimi)}</li>
-                <li>Ruhsat Harcı: {formatTL(sonuc.ekstra.ruhsatHarci)}</li>
-                <li>Yapı Denetim: {formatTL(sonuc.ekstra.yapiDenetim)}</li>
-                <li>Hafriyat: {formatTL(sonuc.ekstra.hafriyat)}</li>
-              </>
-            )}
-
-            <li className="font-bold mt-4">Toplam Maliyet: {formatTL(sonuc.toplamMaliyet)}</li>
-          </ul>
+        <div className="mt-4 flex items-center">
+          <input
+            type="checkbox"
+            id="showGider"
+            className="mr-2"
+            checked={showGiderler}
+            onChange={(e) => setShowGiderler(e.target.checked)}
+          />
+          <label htmlFor="showGider">İnşaat Öncesi Giderleri Göster</label>
         </div>
-      )}
+
+        {result && (
+          <div className="mt-6 text-sm">
+            <p><strong>Beton:</strong> {result.beton} m³</p>
+            <p><strong>Demir:</strong> {(result.demir / 1000).toFixed(2)} ton ({result.demir} kg)</p>
+            <p><strong>Kalıp/Demir İşçilik:</strong> {result.kalip.toLocaleString()} TL ( {m2} x 1500 )</p>
+            <p><strong>Çatı:</strong> {result.cati.toLocaleString()} TL ( {m2} x 1500 )</p>
+            <p><strong>Duvar:</strong> {result.duvar.toLocaleString()} TL ( {m2} x 320 )</p>
+            <p><strong>Toplam Maliyet:</strong> {result.toplam.toLocaleString()} TL ( {convertToWords(result.toplam)} TL )</p>
+
+            {showGiderler && (
+              <div className="mt-4">
+                <p><strong>Proje:</strong> {result.giderler.proje.toLocaleString()} TL</p>
+                <p><strong>Jeolojik Etüt:</strong> {result.giderler.jeolojikEtud.toLocaleString()} TL</p>
+                <p><strong>İnşaat Mühendisi:</strong> {result.giderler.insaatMu.toLocaleString()} TL</p>
+                <p><strong>Yapı Denetim:</strong> {result.giderler.yapiDenetim.toLocaleString()} TL</p>
+                <p><strong>Ruhsat Harcı:</strong> {result.giderler.ruhsatHarci.toLocaleString()} TL</p>
+                <p><strong>Belediye Hizmet:</strong> {result.giderler.belediyeHizmet.toLocaleString()} TL</p>
+                <p className="mt-2"><strong>Genel Toplam:</strong> {result.giderler.genelToplam.toLocaleString()} TL ({convertToWords(result.giderler.genelToplam)} TL)</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
-              }
+}
+
+function convertToWords(num) {
+  const formatter = new Intl.NumberFormat("tr-TR", {
+    style: "currency",
+    currency: "TRY",
+    minimumFractionDigits: 0,
+  });
+  const words = new Intl.NumberFormat("tr-TR", {
+    notation: "compact",
+    compactDisplay: "long",
+  }).format(num);
+
+  return words;
+          }

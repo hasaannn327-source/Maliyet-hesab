@@ -3,12 +3,15 @@ import React, { useState } from "react";
 export default function App() {
   const [arsaM2, setArsaM2] = useState("");
   const [insaatM2, setInsaatM2] = useState("");
+  const [sonuc, setSonuc] = useState(null);
 
   const hesaplaMaliyet = () => {
     const a = parseFloat(arsaM2);
     const i = parseFloat(insaatM2);
-
-    if (isNaN(a) || isNaN(i)) return null;
+    if (isNaN(a) || isNaN(i)) {
+      setSonuc(null);
+      return;
+    }
 
     const betonM3 = i * 0.35;
     const betonFiyat = betonM3 * 2000;
@@ -29,7 +32,7 @@ export default function App() {
 
     const zeminKaplama = i * 0.6 * 1200;
 
-    const pencereAdet = Math.ceil(i / 100); // Yaklaşık oran
+    const pencereAdet = Math.ceil(i / 100);
     const kapiAdet = Math.ceil(pencereAdet / 3);
     const dogramaFiyat =
       pencereAdet * 5000 + kapiAdet * 7000 + 1 * 15000; // çelik kapı dahil
@@ -39,7 +42,7 @@ export default function App() {
 
     const oncesiGider = i * 300;
 
-    const banyoSayisi = Math.ceil(i / 100); // Her 100 m2'ye 1 banyo
+    const banyoSayisi = Math.ceil(i / 100);
     const montajFiyat = banyoSayisi * 15000;
 
     const katSayisi = Math.ceil(i / a / 0.4);
@@ -65,7 +68,7 @@ export default function App() {
       asansorFiyat +
       peyzajFiyat;
 
-    return {
+    setSonuc({
       betonFiyat,
       demirFiyat,
       kalipDemirIscilik,
@@ -81,16 +84,14 @@ export default function App() {
       asansorFiyat,
       peyzajFiyat,
       toplam,
-    };
+    });
   };
-
-  const sonuc = hesaplaMaliyet();
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6 text-sm">
-      <h1 className="text-2xl font-bold text-center">🏗️ Maliyet Hesap Modülü</h1>
+      <h1 className="text-2xl font-bold text-center mb-4">🏗️ Maliyet Hesap Modülü</h1>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 max-w-sm mx-auto">
         <input
           type="number"
           placeholder="Arsa Alanı (m²)"
@@ -105,26 +106,89 @@ export default function App() {
           onChange={(e) => setInsaatM2(e.target.value)}
           className="p-2 border rounded"
         />
+        <button
+          onClick={hesaplaMaliyet}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Hesapla
+        </button>
       </div>
 
       {sonuc && (
-        <div className="bg-white shadow p-4 rounded space-y-2">
-          <p>Beton: {sonuc.betonFiyat.toLocaleString()} TL</p>
-          <p>Demir: {sonuc.demirFiyat.toLocaleString()} TL</p>
-          <p>Kalıp/Demir İşçilik: {sonuc.kalipDemirIscilik.toLocaleString()} TL</p>
-          <p>Çatı: {sonuc.cati.toLocaleString()} TL</p>
-          <p>Duvar: {sonuc.duvarFiyat.toLocaleString()} TL</p>
-          <p>Alçı-Sıva-Boya: {sonuc.alciBoyaSivaFiyat.toLocaleString()} TL</p>
-          <p>Mekanik Tesisat: {sonuc.mekanik.toLocaleString()} TL</p>
-          <p>Zemin Kaplama: {sonuc.zeminKaplama.toLocaleString()} TL</p>
-          <p>Doğrama: {sonuc.dogramaFiyat.toLocaleString()} TL</p>
-          <p>Dış Cephe: {sonuc.disCepheFiyat.toLocaleString()} TL</p>
-          <p>İnşaat Öncesi Gider: {sonuc.oncesiGider.toLocaleString()} TL</p>
-          <p>Banyo + Montaj Malzemesi: {sonuc.montajFiyat.toLocaleString()} TL</p>
-          <p>Asansör: {sonuc.asansorFiyat.toLocaleString()} TL</p>
-          <p>Peyzaj: {sonuc.peyzajFiyat.toLocaleString()} TL</p>
+        <div className="space-y-4 max-w-2xl mx-auto">
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🧱 Beton</h2>
+            <p>🔹 Maliyet: {sonuc.betonFiyat.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🔩 Demir</h2>
+            <p>🔹 Maliyet: {sonuc.demirFiyat.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">👷 Kalıp/Demir İşçilik</h2>
+            <p>🔹 Maliyet: {sonuc.kalipDemirIscilik.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🏠 Çatı</h2>
+            <p>🔹 Maliyet: {sonuc.cati.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🧱 Duvar</h2>
+            <p>🔹 Maliyet: {sonuc.duvarFiyat.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🎨 Alçı - Sıva - Boya</h2>
+            <p>🔹 Maliyet: {sonuc.alciBoyaSivaFiyat.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🚿 Mekanik Tesisat</h2>
+            <p>🔹 Maliyet: {sonuc.mekanik.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🧼 Zemin Kaplama</h2>
+            <p>🔹 Maliyet: {sonuc.zeminKaplama.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🚪 Doğrama (Pencere, Kapı, Çelik Kapı)</h2>
+            <p>🔹 Maliyet: {sonuc.dogramaFiyat.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🏢 Dış Cephe</h2>
+            <p>🔹 Maliyet: {sonuc.disCepheFiyat.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">📄 İnşaat Öncesi Giderler</h2>
+            <p>🔹 Maliyet: {sonuc.oncesiGider.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🛁 Banyo + Mutfak Donanımı (Montaj Malzemesi Dahil)</h2>
+            <p>🔹 Maliyet: {sonuc.montajFiyat.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🚀 Asansör</h2>
+            <p>🔹 Maliyet: {sonuc.asansorFiyat.toLocaleString()} TL</p>
+          </div>
+
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="font-semibold mb-2">🌿 Peyzaj / Çevre Düzenlemesi</h2>
+            <p>🔹 Maliyet: {sonuc.peyzajFiyat.toLocaleString()} TL</p>
+          </div>
+
           <hr />
-          <p className="font-bold text-lg">
+
+          <p className="font-bold text-lg text-center">
             Toplam Maliyet: {sonuc.toplam.toLocaleString()} TL
           </p>
         </div>

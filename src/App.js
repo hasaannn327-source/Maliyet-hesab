@@ -2,48 +2,104 @@ import React, { useState } from "react";
 
 export default function App() {
   const [m2, setM2] = useState("");
+  const [sonuc, setSonuc] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [showGiderler, setShowGiderler] = useState(false);
 
-  const handleSubmit = () => {
+  const [onGiderCheck, setOnGiderCheck] = useState(false);
+
+  const handleHesapla = () => {
+    if (!m2) return;
+
     setLoading(true);
+    setSonuc(null);
+
     setTimeout(() => {
-      const insaatBeton = m2 * 0.35;
-      const insaatDemir = m2 * 40;
-      const kalipDemirIscilik = m2 * 1500;
-      const cati = m2 * 1500;
-      const duvar = m2 * 320;
+      const m2Value = parseFloat(m2);
 
-      const toplam =
-        kalipDemirIscilik + cati + duvar;
+      // Temel inşaat maliyetleri
+      const beton = m2Value * 0.35;
+      const demir = m2Value * 40;
+      const kalipIscilik = m2Value * 1500;
+      const cati = m2Value * 1500;
+      const duvar = m2Value * 320;
 
-      const giderler = {
-        proje: 15000,
-        jeolojikEtud: 8000,
-        insaatMu: 10000,
-        yapiDenetim: 15000,
-        ruhsatHarci: 12000,
-        belediyeHizmet: 5000,
-        genelToplam: toplam + 15000 + 8000 + 10000 + 15000 + 12000 + 5000,
-      };
+      // İnşaat öncesi giderler
+      const ruhsat = 150000;
+      const proje = 100000;
+      const harc = 120000;
+      const zeminEtudu = 60000;
+      const elektrikSuAbone = 40000;
+      const diger = 30000;
 
-      setResult({
-        beton: insaatBeton.toFixed(2),
-        demir: insaatDemir,
-        kalip: kalipDemirIscilik,
+      const onGiderToplam = ruhsat + proje + harc + zeminEtudu + elektrikSuAbone + diger;
+
+      const toplamMaliyet =
+        beton * 3500 + // 1 m³ beton 3500 TL
+        demir * 25 +   // 1 kg demir 25 TL
+        kalipIscilik +
+        cati +
+        duvar +
+        (onGiderCheck ? onGiderToplam : 0);
+
+      setSonuc({
+        beton,
+        demir,
+        kalipIscilik,
         cati,
         duvar,
-        toplam,
-        giderler,
+        toplamMaliyet,
+        onGiderCheck,
+        onGiderToplam,
       });
 
       setLoading(false);
-    }, 10000);
+    }, 3000);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="p-4 font-sans bg-gray-100 min-h-screen">
+      <h1 className="text-2xl font-bold mb-4 text-center">İnşaat Maliyet Hesabı</h1>
+
+      <div className="mb-4">
+        <label className="block mb-2">İnşaat Alanı (m²):</label>
+        <input
+          type="number"
+          value={m2}
+          onChange={(e) => setM2(e.target.value)}
+          className="w-full p-2 border rounded"
+          placeholder="Örn: 1000"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={onGiderCheck}
+            onChange={() => setOnGiderCheck(!onGiderCheck)}
+          />
+          <span>İnşaat öncesi giderleri dahil et</span>
+        </label>
+        {onGiderCheck && (
+          <ul className="mt-2 ml-4 list-disc text-sm text-gray-700">
+            <li>Ruhsat: 150.000 TL</li>
+            <li>Proje: 100.000 TL</li>
+            <li>Harc: 120.000 TL</li>
+            <li>Zemin Etüdü: 60.000 TL</li>
+            <li>Elektrik/Su Abonelik: 40.000 TL</li>
+            <li>Diğer: 30.000 TL</li>
+          </ul>
+        )}
+      </div>
+
+      <button
+        onClick={handleHesapla}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Hesapla
+      </button>
+
+      {/* Loading Ekranı */}
       {loading && (
         <div
           style={{
@@ -52,12 +108,12 @@ export default function App() {
             left: 0,
             right: 0,
             bottom: 0,
-            width: "100%",
-            height: "100%",
+            width: "100vw",
+            height: "100vh",
             margin: 0,
             padding: 0,
             overflow: "hidden",
-            backgroundColor: "rgba(0,0,0,0.85)",
+            backgroundColor: "black",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -68,79 +124,43 @@ export default function App() {
             src="/dancing-dog.gif"
             alt="Yükleniyor"
             style={{
-              maxWidth: "90%",
-              maxHeight: "90%",
-              objectFit: "contain",
-              animation: "none",
+              width: "100vw",
+              height: "100vh",
+              objectFit: "cover",
             }}
           />
         </div>
       )}
 
-      <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-4 text-center">Maliyet Hesap</h1>
-        <input
-          type="number"
-          value={m2}
-          onChange={(e) => setM2(e.target.value)}
-          placeholder="İnşaat Alanı (m²)"
-          className="w-full border p-2 mb-4 rounded"
-        />
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          Hesapla
-        </button>
-
-        <div className="mt-4 flex items-center">
-          <input
-            type="checkbox"
-            id="showGider"
-            className="mr-2"
-            checked={showGiderler}
-            onChange={(e) => setShowGiderler(e.target.checked)}
-          />
-          <label htmlFor="showGider">İnşaat Öncesi Giderleri Göster</label>
+      {/* Sonuçlar */}
+      {sonuc && (
+        <div className="mt-6 bg-white p-4 rounded shadow text-gray-800 space-y-2">
+          <p>Beton: {sonuc.beton.toFixed(2)} m³</p>
+          <p>Demir: {(sonuc.demir / 1000).toFixed(2)} ton ({sonuc.demir.toLocaleString()} kg)</p>
+          <p>Kalıp/Demir İşçilik: {sonuc.kalipIscilik.toLocaleString()} TL (yaklaşık {yaziyaCevir(sonuc.kalipIscilik)})</p>
+          <p>Çatı: {sonuc.cati.toLocaleString()} TL</p>
+          <p>Duvar: {sonuc.duvar.toLocaleString()} TL</p>
+          {sonuc.onGiderCheck && (
+            <p>İnşaat Öncesi Giderler: {sonuc.onGiderToplam.toLocaleString()} TL</p>
+          )}
+          <hr />
+          <p className="text-xl font-bold">
+            Toplam Maliyet: {sonuc.toplamMaliyet.toLocaleString()} TL ({yaziyaCevir(sonuc.toplamMaliyet)})
+          </p>
         </div>
-
-        {result && (
-          <div className="mt-6 text-sm">
-            <p><strong>Beton:</strong> {result.beton} m³</p>
-            <p><strong>Demir:</strong> {(result.demir / 1000).toFixed(2)} ton ({result.demir} kg)</p>
-            <p><strong>Kalıp/Demir İşçilik:</strong> {result.kalip.toLocaleString()} TL ( {m2} x 1500 )</p>
-            <p><strong>Çatı:</strong> {result.cati.toLocaleString()} TL ( {m2} x 1500 )</p>
-            <p><strong>Duvar:</strong> {result.duvar.toLocaleString()} TL ( {m2} x 320 )</p>
-            <p><strong>Toplam Maliyet:</strong> {result.toplam.toLocaleString()} TL ( {convertToWords(result.toplam)} TL )</p>
-
-            {showGiderler && (
-              <div className="mt-4">
-                <p><strong>Proje:</strong> {result.giderler.proje.toLocaleString()} TL</p>
-                <p><strong>Jeolojik Etüt:</strong> {result.giderler.jeolojikEtud.toLocaleString()} TL</p>
-                <p><strong>İnşaat Mühendisi:</strong> {result.giderler.insaatMu.toLocaleString()} TL</p>
-                <p><strong>Yapı Denetim:</strong> {result.giderler.yapiDenetim.toLocaleString()} TL</p>
-                <p><strong>Ruhsat Harcı:</strong> {result.giderler.ruhsatHarci.toLocaleString()} TL</p>
-                <p><strong>Belediye Hizmet:</strong> {result.giderler.belediyeHizmet.toLocaleString()} TL</p>
-                <p className="mt-2"><strong>Genel Toplam:</strong> {result.giderler.genelToplam.toLocaleString()} TL ({convertToWords(result.giderler.genelToplam)} TL)</p>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
 
-function convertToWords(num) {
-  const formatter = new Intl.NumberFormat("tr-TR", {
-    style: "currency",
-    currency: "TRY",
-    minimumFractionDigits: 0,
-  });
-  const words = new Intl.NumberFormat("tr-TR", {
-    notation: "compact",
-    compactDisplay: "long",
-  }).format(num);
-
-  return words;
-          }
+// Basit sayı -> yazı çevirici (bin/milyon için)
+function yaziyaCevir(sayi) {
+  if (sayi >= 1_000_000_000) return "bir milyar+";
+  if (sayi >= 100_000_000) return "yüz milyon+";
+  if (sayi >= 10_000_000) return "on milyon+";
+  if (sayi >= 1_000_000) return "bir milyon+";
+  if (sayi >= 100_000) return "yüz bin+";
+  if (sayi >= 10_000) return "on bin+";
+  if (sayi >= 1_000) return "bin+";
+  return Math.round(sayi).toString();
+        }

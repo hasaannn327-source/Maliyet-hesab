@@ -22,7 +22,6 @@ export default function InsaatMaliyetModulu() {
   const [totalM2, setTotalM2] = useState("");
   const [toplamMaliyet, setToplamMaliyet] = useState(null);
 
-  // m2 fiyatı değişirse toplam fiyat sıfırlanır, tersi de geçerli
   const handleM2PriceChange = (id, value) => {
     setItems((prev) =>
       prev.map((item) =>
@@ -46,19 +45,22 @@ export default function InsaatMaliyetModulu() {
   const hesapla = () => {
     const arsaM2 = parseFloat(totalM2);
     if (isNaN(arsaM2) || arsaM2 <= 0) {
-      alert("Lütfen geçerli bir toplam m² değeri girin.");
+      alert("Lütfen geçerli bir toplam inşaat alanı (m²) girin.");
       return;
     }
 
     let toplam = 0;
+
     items.forEach(({ m2Price, totalPrice }) => {
-      const m2F = parseFloat(m2Price);
-      const totF = parseFloat(totalPrice);
-      if (!isNaN(m2F) && m2F > 0) {
-        toplam += m2F * arsaM2;
-      } else if (!isNaN(totF) && totF > 0) {
-        toplam += totF;
+      const m2Fiyat = parseFloat(m2Price);
+      const toplamFiyat = parseFloat(totalPrice);
+
+      if (!isNaN(m2Fiyat) && m2Fiyat > 0) {
+        toplam += m2Fiyat * arsaM2; // 1 m2 üzerinden hesaplama burada
+      } else if (!isNaN(toplamFiyat) && toplamFiyat > 0) {
+        toplam += toplamFiyat; // Toplam fiyat girilmişse direkt ekle
       }
+      // boş veya sıfırsa ekleme yapmaz
     });
 
     setToplamMaliyet(toplam);
@@ -134,4 +136,4 @@ export default function InsaatMaliyetModulu() {
       )}
     </div>
   );
-            }
+        }

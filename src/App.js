@@ -28,10 +28,10 @@ export default function App() {
     const zeminKaplamaM2 = m2 * 0.6;
     const zeminKaplamaMaliyet = zeminKaplamaM2 * 1200;
 
-    // Doğrama
+    // Doğrama (3 pencere 1 kapı oranı)
     const dogramaM2 = duvarAlanM2 * 0.1;
-    const pencereM2 = dogramaM2 * 0.5;
-    const kapiM2 = dogramaM2 * 0.5;
+    const pencereM2 = dogramaM2 * 0.75;
+    const kapiM2 = dogramaM2 * 0.25;
     const celikKapiAdet = !isNaN(daireSay) && daireSay > 0 ? daireSay : 1;
 
     const dogramaMaliyet =
@@ -66,7 +66,6 @@ export default function App() {
       mekanikTesisatMaliyet,
       zeminKaplamaM2,
       zeminKaplamaMaliyet,
-      dogramaM2,
       pencereM2,
       kapiM2,
       celikKapiAdet,
@@ -119,7 +118,6 @@ export default function App() {
           <p>🧼 Zemin Kaplama: {sonuc.zeminKaplamaM2.toFixed(2)} m² → {sonuc.zeminKaplamaMaliyet.toLocaleString()} TL</p>
 
           <h2 className="text-xl font-semibold mt-4">🚪 Doğramalar</h2>
-          <p>📐 Doğrama Toplam Alanı (Kapı+Pencere): {sonuc.dogramaM2?.toFixed(2) || (sonuc.dogramaM2 ?? 0)} m²</p>
           <p>🪟 Pencere Alanı: {sonuc.pencereM2.toFixed(2)} m² (1800 TL/m²)</p>
           <p>🚪 Kapı Alanı: {sonuc.kapiM2.toFixed(2)} m² (1200 TL/m²)</p>
           <p>🛡️ Çelik Kapı Adedi: {sonuc.celikKapiAdet} (9500 TL/adet)</p>

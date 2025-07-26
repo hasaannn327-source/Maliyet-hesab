@@ -65,6 +65,25 @@ return ( <div className="p-6 max-w-2xl mx-auto"> <h1 className="text-2xl font-bo
         <li>Beton: {sonuc.beton.toFixed(2)} m³</li>
         <li>Demir: {sonuc.demirKg.toFixed(0)} kg ({sonuc.demirTon.toFixed(2)} ton)</li>
         <li>Kalıp/Demir İşçiliği: {formatBinTL(sonuc.kalipIscilik)}</li>
-        <li>Çatı: {formatBinTL(sonuc.cati)}</
+        <li>Çatı: {formatBinTL(sonuc.cati)}</li>
+        <li>Duvar: {formatBinTL(sonuc.duvar)}</li>
+        <li className="font-bold">Toplam (Kaba): {formatBinTL(sonuc.toplam)}</li>
 
-  
+        {ekstraGiderEkle && (
+          <>
+            <li>Zemin Etüdü + Rapor: {formatBinTL(sonuc.zeminEtudu)}</li>
+            <li>Proje Çizimleri: {formatBinTL(sonuc.projeGider)}</li>
+            <li>Ruhsat Harcı: {formatBinTL(sonuc.ruhsatHarc)}</li>
+            <li>Yapı Denetim + Harç: {formatBinTL(sonuc.yapiDenetim)}</li>
+            <li>Hafriyat + Grobeton: {formatBinTL(sonuc.hafriyat)}</li>
+            <li className="font-bold">Genel Ön Hazırlık Toplam: {formatBinTL(sonuc.ekstraGiderler)}</li>
+            <li className="font-bold text-blue-800">Genel Toplam: {formatBinTL(sonuc.genelToplam)}</li>
+          </>
+        )}
+      </ul>
+    </div>
+  )}
+</div>
+
+); }
+

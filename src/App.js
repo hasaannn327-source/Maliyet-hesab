@@ -119,40 +119,47 @@ export default function App() {
   };
 
   return (
-    <div className="relative max-w-3xl mx-auto p-6 space-y-6 text-sm min-h-screen">
-      <h1 className="text-2xl font-bold text-center mb-4">🏗️ Maliyet Hesap Modülü</h1>
+    <div className="min-h-screen bg-gradient-to-tr from-cyan-100 via-blue-100 to-indigo-100 p-6 flex flex-col items-center">
+      <h1 className="text-4xl font-extrabold mb-8 text-indigo-900 drop-shadow-md">
+        🏗️ Maliyet Hesap Modülü
+      </h1>
 
-      <div className="grid grid-cols-1 gap-4 max-w-sm mx-auto">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 space-y-6">
         <input
           type="number"
           placeholder="Arsa Alanı (m²)"
           value={arsaM2}
           onChange={(e) => setArsaM2(e.target.value)}
-          className="p-2 border rounded"
+          className="w-full p-3 rounded-md border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
         />
         <input
           type="number"
           placeholder="İnşaat Alanı (m²)"
           value={insaatM2}
           onChange={(e) => setInsaatM2(e.target.value)}
-          className="p-2 border rounded"
+          className="w-full p-3 rounded-md border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
         />
+
         <button
           onClick={hesaplaMaliyet}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-md transition"
         >
           Hesapla
         </button>
       </div>
 
       {showPopup && sonuc && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center z-50">
-          <div className="bg-white rounded-lg p-8 text-center max-w-sm w-full shadow-lg">
-            <h2 className="text-3xl font-bold mb-4">Toplam Maliyet</h2>
-            <p className="text-5xl font-extrabold mb-6">{sonuc.toplam.toLocaleString()} TL</p>
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center z-50 px-4">
+          <div className="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-xl animate-fadeIn">
+            <h2 className="text-3xl font-bold mb-6 text-indigo-900">
+              Toplam Maliyet
+            </h2>
+            <p className="text-5xl font-extrabold mb-8 text-indigo-700">
+              {sonuc.toplam.toLocaleString()} TL
+            </p>
             <button
               onClick={() => setShowPopup(false)}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition"
             >
               Okey
             </button>
@@ -161,94 +168,111 @@ export default function App() {
       )}
 
       {!showPopup && sonuc && (
-        <div className="space-y-4 max-w-2xl mx-auto mt-6">
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">📄 İnşaat Öncesi Giderler</h2>
+        <div className="w-full max-w-md mt-10 bg-white rounded-xl shadow-lg p-6 space-y-4 animate-slideUp">
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">📄 İnşaat Öncesi Giderler</h2>
             <p>🔹 Maliyet: {sonuc.oncesiGider.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🧱 Beton</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🧱 Beton</h2>
             <p>🔹 Maliyet: {sonuc.betonFiyat.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🔩 Demir</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🔩 Demir</h2>
             <p>🔹 Maliyet: {sonuc.demirFiyat.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">👷 Kalıp/Demir İşçilik</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">👷 Kalıp/Demir İşçilik</h2>
             <p>🔹 Maliyet: {sonuc.kalipDemirIscilik.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🏠 Çatı</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🏠 Çatı</h2>
             <p>🔹 Maliyet: {sonuc.cati.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🧱 Duvar</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🧱 Duvar</h2>
             <p>🔹 Maliyet: {sonuc.duvarFiyat.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🎨 Alçı - Sıva - Boya</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🎨 Alçı - Sıva - Boya</h2>
             <p>🔹 Maliyet: {sonuc.alciBoyaSivaFiyat.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🚿 Mekanik Tesisat</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🚿 Mekanik Tesisat</h2>
             <p>🔹 Maliyet: {sonuc.mekanik.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🧼 Zemin Kaplama</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🧼 Zemin Kaplama</h2>
             <p>🔹 Maliyet: {sonuc.zeminKaplama.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🚪 Doğrama (Pencere, Kapı, Çelik Kapı)</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🚪 Doğrama (Pencere, Kapı, Çelik Kapı)</h2>
             <p>🔹 Maliyet: {sonuc.dogramaFiyat.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🏢 Dış Cephe</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🏢 Dış Cephe</h2>
             <p>🔹 Maliyet: {sonuc.disCepheFiyat.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🛁 Banyo + Mutfak Donanımı (Montaj Malzemesi Dahil)</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🛁 Banyo + Mutfak Donanımı (Montaj Malzemesi Dahil)</h2>
             <p>🔹 Maliyet: {sonuc.montajFiyat.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🚀 Asansör</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🚀 Asansör</h2>
             <p>🔹 Maliyet: {sonuc.asansorFiyat.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🌿 Peyzaj / Çevre Düzenlemesi</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🌿 Peyzaj / Çevre Düzenlemesi</h2>
             <p>🔹 Maliyet: {sonuc.peyzajFiyat.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">💼 Öngörülmeyen Giderler ve Personel Ödemeleri</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">💼 Öngörülmeyen Giderler ve Personel Ödemeleri</h2>
             <p>🔹 Maliyet: {sonuc.ongorulmayanGiderler.toLocaleString()} TL</p>
           </div>
 
-          <div className="bg-white shadow rounded p-4">
-            <h2 className="font-semibold mb-2">🏛️ Resmi İşlemler</h2>
+          <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+            <h2 className="font-semibold mb-2 text-indigo-900">🏛️ Resmi İşlemler</h2>
             <p>🔹 Maliyet: {sonuc.resmiIslemler.toLocaleString()} TL</p>
           </div>
 
-          <hr />
+          <hr className="border-indigo-300" />
 
-          <p className="font-bold text-lg text-center">
+          <p className="font-bold text-xl text-center text-indigo-900">
             Toplam Maliyet: {sonuc.toplam.toLocaleString()} TL
           </p>
         </div>
       )}
+
+      <style>{`
+        @keyframes fadeIn {
+          from {opacity: 0; transform: translateY(10px);}
+          to {opacity: 1; transform: translateY(0);}
+        }
+        @keyframes slideUp {
+          from {opacity: 0; transform: translateY(30px);}
+          to {opacity: 1; transform: translateY(0);}
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease forwards;
+        }
+        .animate-slideUp {
+          animation: slideUp 0.3s ease forwards;
+        }
+      `}</style>
     </div>
   );
-        }
+      }

@@ -4,12 +4,14 @@ export default function App() {
   const [arsaM2, setArsaM2] = useState("");
   const [insaatM2, setInsaatM2] = useState("");
   const [sonuc, setSonuc] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
 
   const hesaplaMaliyet = () => {
     const a = parseFloat(arsaM2);
     const i = parseFloat(insaatM2);
     if (isNaN(a) || isNaN(i)) {
       setSonuc(null);
+      setShowPopup(false);
       return;
     }
 
@@ -41,14 +43,12 @@ export default function App() {
     // Zemin Kaplama
     const zeminKaplama = i * 0.6 * 1200;
 
-    // Doğrama (Ortalama daireye göre hesaplama)
-    const ortalamaDaireM2 = 100; // Ortalama daire m2
+    // Doğrama
+    const ortalamaDaireM2 = 100;
     const daireSayisi = Math.ceil(i / ortalamaDaireM2);
-
     const pencereAdet = daireSayisi * 6;
     const kapiAdet = daireSayisi * 5;
     const celikKapiAdet = daireSayisi;
-
     const dogramaFiyat = pencereAdet * 7000 + kapiAdet * 10000 + celikKapiAdet * 25000;
 
     // Dış Cephe
@@ -58,11 +58,11 @@ export default function App() {
     // İnşaat Öncesi Giderler
     const oncesiGider = i * 300;
 
-    // Banyo + Mutfak Donanımı + Montaj
+    // Banyo + Mutfak Montaj Malzemesi
     const banyoSayisi = Math.ceil(i / 100);
     const montajFiyat = banyoSayisi * 15000;
 
-    // Kat Sayısı Hesabı ve Asansör
+    // Kat Sayısı ve Asansör
     const katSayisi = Math.ceil(i / a / 0.4);
     const asansorAdet = Math.ceil(katSayisi / 4);
     const asansorFiyat = asansorAdet * 350000;
@@ -71,13 +71,13 @@ export default function App() {
     const peyzajAlan = a * 0.2;
     const peyzajFiyat = peyzajAlan * 300;
 
-    // Öngörülmeyen Giderler ve Personel Ödemeleri
+    // Öngörülmeyen Giderler ve Personel
     const ongorulmayanGiderler = 1000000;
 
     // Resmi İşlemler
     const resmiIslemler = 30000;
 
-    // Toplam Maliyet
+    // Toplam
     const toplam =
       betonFiyat +
       demirFiyat +
@@ -115,10 +115,11 @@ export default function App() {
       resmiIslemler,
       toplam,
     });
+    setShowPopup(true);
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-6 text-sm">
+    <div className="relative max-w-3xl mx-auto p-6 space-y-6 text-sm min-h-screen">
       <h1 className="text-2xl font-bold text-center mb-4">🏗️ Maliyet Hesap Modülü</h1>
 
       <div className="grid grid-cols-1 gap-4 max-w-sm mx-auto">
@@ -144,8 +145,23 @@ export default function App() {
         </button>
       </div>
 
-      {sonuc && (
-        <div className="space-y-4 max-w-2xl mx-auto">
+      {showPopup && sonuc && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center z-50">
+          <div className="bg-white rounded-lg p-8 text-center max-w-sm w-full shadow-lg">
+            <h2 className="text-3xl font-bold mb-4">Toplam Maliyet</h2>
+            <p className="text-5xl font-extrabold mb-6">{sonuc.toplam.toLocaleString()} TL</p>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+            >
+              Okey
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!showPopup && sonuc && (
+        <div className="space-y-4 max-w-2xl mx-auto mt-6">
           <div className="bg-white shadow rounded p-4">
             <h2 className="font-semibold mb-2">📄 İnşaat Öncesi Giderler</h2>
             <p>🔹 Maliyet: {sonuc.oncesiGider.toLocaleString()} TL</p>
@@ -235,4 +251,4 @@ export default function App() {
       )}
     </div>
   );
-            }
+        }

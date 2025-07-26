@@ -2,13 +2,15 @@ import React, { useState } from "react";
 
 export default function App() {
   const [insaatAlani, setInsaatAlani] = useState("");
+  const [daireSayisi, setDaireSayisi] = useState("");
   const [sonuc, setSonuc] = useState(null);
 
   const hesapla = () => {
     const m2 = parseFloat(insaatAlani);
+    const daireSay = parseInt(daireSayisi);
     if (isNaN(m2)) return;
 
-    // Ana Kalemler
+    // Ana kalemler
     const betonM3 = m2 * 0.35;
     const demirKg = m2 * 40;
     const demirTon = demirKg / 1000;
@@ -16,15 +18,24 @@ export default function App() {
     const cati = m2 * 1500;
 
     // Duvar ve ona bağlı kalemler
-    const duvarAlanM2 = m2 - (m2 * 0.2); // %80
+    const duvarAlanM2 = m2 - m2 * 0.2; // %80
     const duvarMaliyet = duvarAlanM2 * 250;
     const alciSivaBoyaM2 = duvarAlanM2 * 3;
     const alciSivaBoyaMaliyet = alciSivaBoyaM2 * 350;
     const mekanikTesisatMaliyet = duvarAlanM2 * 500;
 
-    // Zemin kaplama (60% x 1200 TL)
+    // Zemin kaplama
     const zeminKaplamaM2 = m2 * 0.6;
     const zeminKaplamaMaliyet = zeminKaplamaM2 * 1200;
+
+    // Doğrama
+    const dogramaM2 = duvarAlanM2 * 0.1;
+    const pencereM2 = dogramaM2 * 0.5;
+    const kapiM2 = dogramaM2 * 0.5;
+    const celikKapiAdet = !isNaN(daireSay) && daireSay > 0 ? daireSay : 1;
+
+    const dogramaMaliyet =
+      pencereM2 * 1800 + kapiM2 * 1200 + celikKapiAdet * 9500;
 
     // İnşaat öncesi giderler
     const projeRuhsat = m2 * 250;
@@ -39,6 +50,7 @@ export default function App() {
       alciSivaBoyaMaliyet +
       mekanikTesisatMaliyet +
       zeminKaplamaMaliyet +
+      dogramaMaliyet +
       cati +
       oncesiGiderToplam;
 
@@ -54,6 +66,11 @@ export default function App() {
       mekanikTesisatMaliyet,
       zeminKaplamaM2,
       zeminKaplamaMaliyet,
+      dogramaM2,
+      pencereM2,
+      kapiM2,
+      celikKapiAdet,
+      dogramaMaliyet,
       projeRuhsat,
       zeminEtudu,
       belediyeHarci,
@@ -72,6 +89,14 @@ export default function App() {
         className="p-2 border rounded mb-4 w-full max-w-sm"
         value={insaatAlani}
         onChange={(e) => setInsaatAlani(e.target.value)}
+      />
+
+      <input
+        type="number"
+        placeholder="Daire Sayısı (Çelik Kapı Adedi)"
+        className="p-2 border rounded mb-4 w-full max-w-sm"
+        value={daireSayisi}
+        onChange={(e) => setDaireSayisi(e.target.value)}
       />
 
       <button
@@ -93,6 +118,13 @@ export default function App() {
           <p>🔌🚿 Elektrik + Su Tesisatı: {sonuc.mekanikTesisatMaliyet.toLocaleString()} TL</p>
           <p>🧼 Zemin Kaplama: {sonuc.zeminKaplamaM2.toFixed(2)} m² → {sonuc.zeminKaplamaMaliyet.toLocaleString()} TL</p>
 
+          <h2 className="text-xl font-semibold mt-4">🚪 Doğramalar</h2>
+          <p>📐 Doğrama Toplam Alanı (Kapı+Pencere): {sonuc.dogramaM2?.toFixed(2) || (sonuc.dogramaM2 ?? 0)} m²</p>
+          <p>🪟 Pencere Alanı: {sonuc.pencereM2.toFixed(2)} m² (1800 TL/m²)</p>
+          <p>🚪 Kapı Alanı: {sonuc.kapiM2.toFixed(2)} m² (1200 TL/m²)</p>
+          <p>🛡️ Çelik Kapı Adedi: {sonuc.celikKapiAdet} (9500 TL/adet)</p>
+          <p>💸 Doğrama Maliyeti: {sonuc.dogramaMaliyet.toLocaleString()} TL</p>
+
           <h2 className="text-xl font-semibold mt-4">📄 İnşaat Öncesi Giderler</h2>
           <p>📌 Proje + Ruhsat: {sonuc.projeRuhsat.toLocaleString()} TL</p>
           <p>📌 Zemin Etüdü: {sonuc.zeminEtudu.toLocaleString()} TL</p>
@@ -107,4 +139,4 @@ export default function App() {
       )}
     </div>
   );
-}
+        }

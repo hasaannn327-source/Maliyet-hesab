@@ -31,6 +31,14 @@ export default function App() {
     const duvarM2 = i - i * 0.2;
     const duvarFiyat = duvarM2 * 250;
 
+    // Asansör boşluğu sabit maliyet
+    const asansorBoslugu = 35000;
+
+    // Kat sayısı ve asansör cihaz maliyeti
+    const katSayisi = Math.ceil(i / a / 0.4);
+    const asansorAdet = Math.ceil(katSayisi / 4);
+    const asansorCihazFiyat = asansorAdet * 350000;
+
     // İnce maliyet kalemleri
     const alciBoyaSivaM2 = duvarM2 * 3;
     const alciBoyaSivaFiyat = alciBoyaSivaM2 * 350;
@@ -54,10 +62,6 @@ export default function App() {
     const banyoSayisi = Math.ceil(i / 100);
     const montajFiyat = banyoSayisi * 15000;
 
-    const katSayisi = Math.ceil(i / a / 0.4);
-    const asansorAdet = Math.ceil(katSayisi / 4);
-    const asansorFiyat = asansorAdet * 350000;
-
     const peyzajAlan = a * 0.2;
     const peyzajFiyat = peyzajAlan * 300;
 
@@ -65,7 +69,6 @@ export default function App() {
 
     const resmiIslemler = 30000;
 
-    // Hesaplama - sadece seçilen kalemler dahil edilir
     const toplamKaba =
       betonFiyat +
       demirFiyat +
@@ -81,7 +84,8 @@ export default function App() {
       disCepheFiyat +
       oncesiGider +
       montajFiyat +
-      asansorFiyat +
+      asansorBoslugu +       // Asansör boşluğu ince maliyete eklendi
+      asansorCihazFiyat +    // Asansör cihazı ince maliyete eklendi
       peyzajFiyat +
       ongorulmayanGiderler +
       resmiIslemler;
@@ -104,7 +108,8 @@ export default function App() {
       disCepheFiyat,
       oncesiGider,
       montajFiyat,
-      asansorFiyat,
+      asansorBoslugu,
+      asansorCihazFiyat,
       peyzajFiyat,
       ongorulmayanGiderler,
       resmiIslemler,
@@ -251,9 +256,16 @@ export default function App() {
                 <p>🔹 Maliyet: {sonuc.montajFiyat.toLocaleString()} TL</p>
               </div>
 
+              {/* Asansör Boşluğu */}
               <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
-                <h2 className="font-semibold mb-2 text-indigo-900">🚀 Asansör</h2>
-                <p>🔹 Maliyet: {sonuc.asansorFiyat.toLocaleString()} TL</p>
+                <h2 className="font-semibold mb-2 text-indigo-900">🚧 Asansör Boşluğu</h2>
+                <p>🔹 Maliyet: {sonuc.asansorBoslugu.toLocaleString()} TL</p>
+              </div>
+
+              {/* Asansör Cihazı */}
+              <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+                <h2 className="font-semibold mb-2 text-indigo-900">🛗 Asansör Cihazı</h2>
+                <p>🔹 Maliyet: {sonuc.asansorCihazFiyat.toLocaleString()} TL</p>
               </div>
 
               <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
@@ -261,7 +273,7 @@ export default function App() {
                 <p>🔹 Maliyet: {sonuc.peyzajFiyat.toLocaleString()} TL</p>
               </div>
 
-              <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+<div className="bg-indigo-50 rounded-md p-3 shadow-inner">
                 <h2 className="font-semibold mb-2 text-indigo-900">💼 Öngörülmeyen Giderler ve Personel Ödemeleri</h2>
                 <p>🔹 Maliyet: {sonuc.ongorulmayanGiderler.toLocaleString()} TL</p>
               </div>
@@ -299,4 +311,4 @@ export default function App() {
       `}</style>
     </div>
   );
-                }
+}

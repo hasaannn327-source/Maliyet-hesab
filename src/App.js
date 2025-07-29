@@ -57,7 +57,8 @@ export default function App() {
     const disCepheM2 = i / 6.25;
     const disCepheFiyat = disCepheM2 * 2200;
 
-    const oncesiGider = i * 300;
+    // İnşaat öncesi sabit gider (700.000 TL / 1000 m²)
+    const oncesiGider = (i / 1000) * 700000;
 
     const banyoSayisi = Math.ceil(i / 100);
     const montajFiyat = banyoSayisi * 15000;
@@ -84,8 +85,8 @@ export default function App() {
       disCepheFiyat +
       oncesiGider +
       montajFiyat +
-      asansorBoslugu +       // Asansör boşluğu ince maliyete eklendi
-      asansorCihazFiyat +    // Asansör cihazı ince maliyete eklendi
+      asansorBoslugu +
+      asansorCihazFiyat +
       peyzajFiyat +
       ongorulmayanGiderler +
       resmiIslemler;
@@ -273,7 +274,7 @@ export default function App() {
                 <p>🔹 Maliyet: {sonuc.peyzajFiyat.toLocaleString()} TL</p>
               </div>
 
-<div className="bg-indigo-50 rounded-md p-3 shadow-inner">
+              <div className="bg-indigo-50 rounded-md p-3 shadow-inner">
                 <h2 className="font-semibold mb-2 text-indigo-900">💼 Öngörülmeyen Giderler ve Personel Ödemeleri</h2>
                 <p>🔹 Maliyet: {sonuc.ongorulmayanGiderler.toLocaleString()} TL</p>
               </div>

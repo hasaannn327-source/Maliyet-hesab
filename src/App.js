@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { CITY_MULTIPLIERS, QUALITY_MULTIPLIERS } from "./PriceConfig";
 
 export default function App() {
   const [arsaM2, setArsaM2] = useState("");
@@ -7,13 +8,54 @@ export default function App() {
   const [inceMaliyet, setInceMaliyet] = useState(true);
   const [sonuc, setSonuc] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
+  const [savedCalculations, setSavedCalculations] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('Diğer');
+  const [qualityLevel, setQualityLevel] = useState('Standart');
+
+  // Hesaplamayı kaydet
+  const saveCalculation = () => {
+    const calculation = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString('tr-TR'),
+      arsaM2,
+      insaatM2,
+      kabaMaliyet,
+      inceMaliyet,
+      result: sonuc
+    };
+    
+    const saved = JSON.parse(localStorage.getItem('calculations') || '[]');
+    saved.push(calculation);
+    localStorage.setItem('calculations', JSON.stringify(saved));
+    setSavedCalculations(saved);
+    alert('Hesaplama kaydedildi!');
+  };
+
+  // Kaydedilen hesaplamaları yükle
+  const loadCalculations = () => {
+    const saved = JSON.parse(localStorage.getItem('calculations') || '[]');
+    setSavedCalculations(saved);
+  };
+
+  useEffect(() => {
+    loadCalculations();
+  }, []);
 
   const hesaplaMaliyet = () => {
     const a = parseFloat(arsaM2);
     const i = parseFloat(insaatM2);
-    if (isNaN(a) || isNaN(i)) {
+    
+    // Gelişmiş validasyon
+    if (isNaN(a) || isNaN(i) || a <= 0 || i <= 0) {
+      alert("Lütfen geçerli pozitif değerler giriniz!");
       setSonuc(null);
       setShowPopup(false);
+      return;
+    }
+    
+    if (i > a * 5) {
+      alert("İnşaat alanı, arsa alanının 5 katından fazla olamaz!");
       return;
     }
 
@@ -34,10 +76,10 @@ export default function App() {
     // Asansör boşluğu sabit maliyet
     const asansorBoslugu = 35000;
 
-    // Kat sayısı ve asansör cihaz maliyeti
+    // Kat sayısı ve asansör cihaz maliyeti (m²'ye göre değişken)
     const katSayisi = Math.ceil(i / a / 0.4);
     const asansorAdet = Math.ceil(katSayisi / 4);
-    const asansorCihazFiyat = asansorAdet * 350000;
+    const asansorCihazFiyat = asansorAdet * (i * 700); // 500 m²'de 350.000 TL = 700 TL/m²
 
     // İnce maliyet kalemleri
     const alciBoyaSivaM2 = duvarM2 * 3;
@@ -68,7 +110,7 @@ export default function App() {
 
     const ongorulmayanGiderler = 1000000;
 
-    const resmiIslemler = 30000;
+    const resmiIslemler = i * 83;
 
     const toplamKaba =
       betonFiyat +
@@ -92,9 +134,14 @@ export default function App() {
       resmiIslemler;
 
     const toplam = (kabaMaliyet ? toplamKaba : 0) + (inceMaliyet ? toplamInce : 0);
+    
+    // Şehir ve kalite çarpanlarını uygula
+    const cityMultiplier = CITY_MULTIPLIERS[selectedCity];
+    const qualityMultiplier = QUALITY_MULTIPLIERS[qualityLevel];
+    const toplamCarpanli = toplam * cityMultiplier * qualityMultiplier;
 
-    const hataPayi = toplam * 0.05;
-    const toplamHataPayli = toplam + hataPayi;
+    const hataPayi = toplamCarpanli * 0.05;
+    const toplamHataPayli = toplamCarpanli + hataPayi;
 
     setSonuc({
       betonFiyat,
@@ -142,6 +189,28 @@ export default function App() {
           className="w-full p-3 rounded-md border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
         />
 
+        <select
+          value={selectedCity}
+          onChange={(e) => setSelectedCity(e.target.value)}
+          className="w-full p-3 rounded-md border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <option value="Diğer">Şehir Seçin</option>
+          <option value="İstanbul">İstanbul (+20%)</option>
+          <option value="Ankara">Ankara (+10%)</option>
+          <option value="İzmir">İzmir (+15%)</option>
+          <option value="Diğer">Diğer Şehirler</option>
+        </select>
+
+        <select
+          value={qualityLevel}
+          onChange={(e) => setQualityLevel(e.target.value)}
+          className="w-full p-3 rounded-md border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <option value="Ekonomik">Ekonomik (-15%)</option>
+          <option value="Standart">Standart</option>
+          <option value="Lüks">Lüks (+35%)</option>
+        </select>
+
         <div className="flex items-center space-x-4 mt-2">
           <label className="inline-flex items-center space-x-2">
             <input
@@ -170,6 +239,23 @@ export default function App() {
         >
           Hesapla
         </button>
+
+        {sonuc && (
+          <div className="flex space-x-2">
+            <button
+              onClick={saveCalculation}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg shadow-md transition"
+            >
+              💾 Kaydet
+            </button>
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg shadow-md transition"
+            >
+              📝 Geçmiş ({savedCalculations.length})
+            </button>
+          </div>
+        )}
       </div>
 
       {showPopup && sonuc && (
@@ -186,6 +272,25 @@ export default function App() {
               Okey
             </button>
           </div>
+        </div>
+      )}
+
+      {showHistory && (
+        <div className="w-full max-w-md mt-6 bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-bold mb-4 text-indigo-900">📊 Hesaplama Geçmişi</h3>
+          {savedCalculations.length === 0 ? (
+            <p className="text-gray-500">Henüz kaydedilmiş hesaplama yok.</p>
+          ) : (
+            <div className="space-y-3 max-h-60 overflow-y-auto">
+              {savedCalculations.map((calc) => (
+                <div key={calc.id} className="bg-indigo-50 p-3 rounded-lg">
+                  <p className="text-sm text-indigo-700">📅 {calc.date}</p>
+                  <p className="text-sm">🏠 {calc.arsaM2}m² arsa, {calc.insaatM2}m² inşaat</p>
+                  <p className="font-bold text-indigo-900">💰 {calc.result.toplamHataPayli.toLocaleString()} TL</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -288,9 +393,14 @@ export default function App() {
 
           <hr className="border-indigo-300" />
 
-          <p className="font-bold text-xl text-center text-indigo-900">
-            Toplam Maliyet (Hata Payı %5 dahil): {sonuc.toplamHataPayli.toLocaleString()} TL
-          </p>
+          <div className="bg-gradient-to-r from-indigo-100 to-blue-100 rounded-lg p-4">
+            <p className="font-bold text-xl text-center text-indigo-900">
+              💰 Toplam Maliyet (Hata Payı %5 dahil): {sonuc.toplamHataPayli.toLocaleString()} TL
+            </p>
+            <p className="text-sm text-center text-indigo-700 mt-2">
+              📍 {selectedCity} - 🏆 {qualityLevel} Kalite
+            </p>
+          </div>
         </div>
       )}
 
@@ -312,4 +422,5 @@ export default function App() {
       `}</style>
     </div>
   );
-}
+        }
+                

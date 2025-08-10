@@ -1,5 +1,7 @@
+import { PriceConfig, CityMultipliers, QualityMultipliers } from '../types';
+
 // Fiyat yapılandırma dosyası
-export const PRICES = {
+export const PRICES: PriceConfig = {
   beton: {
     m3Fiyat: 3000,
     m3PerM2: 0.35
@@ -11,7 +13,7 @@ export const PRICES = {
 };
 
 // Şehir çarpanları
-export const CITY_MULTIPLIERS = {
+export const CITY_MULTIPLIERS: CityMultipliers = {
   'İstanbul': 1.25,
   'Ankara': 1.15,
   'İzmir': 1.20,
@@ -24,7 +26,7 @@ export const CITY_MULTIPLIERS = {
 };
 
 // Kalite çarpanları
-export const QUALITY_MULTIPLIERS = {
+export const QUALITY_MULTIPLIERS: QualityMultipliers = {
   'Ekonomik': 0.85,
   'Standart': 1.0,
   'Lüks': 1.35

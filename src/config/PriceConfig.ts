@@ -1,4 +1,4 @@
-import { PriceConfig, CityMultipliers, QualityMultipliers } from '../types';
+import { PriceConfig, CityMultipliers, QualityLevel } from '../types';
 
 // Fiyat yapılandırma dosyası
 export const PRICES: PriceConfig = {
@@ -26,8 +26,8 @@ export const CITY_MULTIPLIERS: CityMultipliers = {
 };
 
 // Kalite çarpanları
-export const QUALITY_MULTIPLIERS: QualityMultipliers = {
-  'Ekonomik': 0.85,
-  'Standart': 1.0,
-  'Lüks': 1.35
-};
+export const QUALITY_MULTIPLIERS = {
+  Ekonomik: 0.85,
+  Standart: 1.0,
+  Lüks: 1.35,
+} as const satisfies Record<QualityLevel, number>;

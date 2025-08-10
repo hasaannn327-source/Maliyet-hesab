@@ -8,6 +8,7 @@ interface CardProps {
   title?: string;
   subtitle?: string;
   hover?: boolean;
+  onClick?: () => void;  // onClick prop eklendi
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -15,7 +16,8 @@ export const Card: React.FC<CardProps> = ({
   className,
   title,
   subtitle,
-  hover = false
+  hover = false,
+  onClick,  // onClick props olarak alındı
 }) => {
   return (
     <motion.div
@@ -27,6 +29,7 @@ export const Card: React.FC<CardProps> = ({
         'bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700',
         className
       )}
+      onClick={onClick}  {/* Burada onClick kullanılıyor */}
     >
       {(title || subtitle) && (
         <div className="mb-4">

@@ -24,7 +24,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "analyze": "npm run build && npx bundle-analyzer build/static/js/*.js"
   },
   "browserslist": {
     "production": [

@@ -10,12 +10,12 @@ root.render(
   </React.StrictMode>
 );
 
-// Service Worker kaydı
-if ('serviceWorker' in navigator) {
+// Service Worker kaydı - Vercel uyumlu
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
-        console.log('SW registered: ', registration);
+        console.log('SW registered successfully: ', registration);
       })
       .catch((registrationError) => {
         console.log('SW registration failed: ', registrationError);

@@ -96,7 +96,7 @@ export const useCalculation = () => {
       
       // Çarpanları uygula
       const cityMultiplier = CITY_MULTIPLIERS[input.selectedCity] || 1;
-      const qualityMultiplier = QUALITY_MULTIPLIERS[input.qualityLevel];
+      const qualityMultiplier = QUALITY_MULTIPLIERS[input.qualityLevel as keyof typeof QUALITY_MULTIPLIERS];
       const toplamCarpanli = toplam * cityMultiplier * qualityMultiplier;
 
       const hataPayi = toplamCarpanli * 0.05;

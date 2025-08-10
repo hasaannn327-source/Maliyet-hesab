@@ -83,6 +83,4 @@ export interface CityMultipliers {
   [key: string]: number;
 }
 
-export interface QualityMultipliers {
-  [key in QualityLevel]: number;
-}
+export type QualityMultipliers = Record<QualityLevel, number>;

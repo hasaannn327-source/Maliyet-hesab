@@ -1,4 +1,4 @@
-import { PriceConfig, CityMultipliers, QualityLevel } from '../types';
+import type { PriceConfig, CityMultipliers, QualityLevel } from '../types';
 
 // Fiyat yapılandırma dosyası
 export const PRICES: PriceConfig = {

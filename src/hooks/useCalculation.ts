@@ -95,8 +95,8 @@ export const useCalculation = () => {
       const toplam = (input.kabaMaliyet ? toplamKaba : 0) + (input.inceMaliyet ? toplamInce : 0);
       
       // Çarpanları uygula
-      const cityMultiplier = CITY_MULTIPLIERS[input.selectedCity] || 1;
-      const qualityMultiplier = QUALITY_MULTIPLIERS[input.qualityLevel];
+      const cityMultiplier = CITY_MULTIPLIERS[input.selectedCity as keyof typeof CITY_MULTIPLIERS] || 1;
+      const qualityMultiplier = QUALITY_MULTIPLIERS[input.qualityLevel as QualityLevel];
       const toplamCarpanli = toplam * cityMultiplier * qualityMultiplier;
 
       const hataPayi = toplamCarpanli * 0.05;

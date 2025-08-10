@@ -1,11 +1,26 @@
 {
   "version": 2,
-  "public": false,
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "installCommand": "npm install",
+  "framework": "create-react-app",
   "routes": [
     {
       "src": "/static/(.*)",
       "headers": {
         "cache-control": "s-maxage=31536000,immutable"
+      }
+    },
+    {
+      "src": "/manifest.json",
+      "headers": {
+        "cache-control": "s-maxage=31536000,immutable"
+      }
+    },
+    {
+      "src": "/sw.js",
+      "headers": {
+        "cache-control": "s-maxage=0,no-cache"
       }
     },
     {
@@ -15,5 +30,10 @@
   ],
   "env": {
     "GENERATE_SOURCEMAP": "false"
+  },
+  "functions": {
+    "app/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
   }
 }

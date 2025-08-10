@@ -84,5 +84,5 @@ export interface CityMultipliers {
 }
 
 export interface QualityMultipliers {
-  [key in QualityLevel]: number;
+  [key: string]: number;
 }

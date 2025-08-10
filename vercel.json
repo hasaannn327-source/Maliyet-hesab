@@ -9,5 +9,9 @@
         { "key": "cache-control", "value": "s-maxage=31536000, immutable" }
       ]
     }
-  ]
+  ],
+  "env": {
+    "TSC_COMPILE_ON_ERROR": "true",
+    "GENERATE_SOURCEMAP": "false"
+  }
 }

@@ -1,8 +1,8 @@
 import React from 'react';
-import { motion, MotionProps } from 'framer-motion';
+import { motion, type HTMLMotionProps } from 'framer-motion';
 import clsx from 'clsx';
 
-type MotionButtonProps = React.ComponentPropsWithoutRef<'button'> & MotionProps;
+type MotionButtonProps = HTMLMotionProps<'button'>;
 
 interface ButtonProps extends MotionButtonProps {
   variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';

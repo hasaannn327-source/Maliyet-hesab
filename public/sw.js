@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'imar-hesap-v2';
+const CACHE_NAME = 'imar-hesap-v3';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -16,6 +16,9 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
       .then(() => self.skipWaiting())
+      .catch((error) => {
+        console.log('Cache installation failed:', error);
+      })
   );
 });
 
@@ -32,11 +35,24 @@ self.addEventListener('activate', (event) => {
         })
       );
     }).then(() => self.clients.claim())
+    .catch((error) => {
+      console.log('Cache activation failed:', error);
+    })
   );
 });
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Skip chrome-extension requests
+  if (event.request.url.startsWith('chrome-extension://')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -60,9 +76,16 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME)
             .then((cache) => {
               cache.put(event.request, responseToCache);
+            })
+            .catch((error) => {
+              console.log('Cache put failed:', error);
             });
           
           return response;
+        }).catch((error) => {
+          console.log('Fetch failed:', error);
+          // Return a fallback response if available
+          return caches.match('/');
         });
       })
   );

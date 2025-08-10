@@ -1,43 +1,50 @@
 import { useState, useCallback } from 'react';
-import { CalculationInput, CalculationResult, TimelineItem } from '../types';
+import { CalculationInput, CalculationResult, TimelineItem, QualityLevel } from '../types';
 import { CITY_MULTIPLIERS, QUALITY_MULTIPLIERS } from '../config/PriceConfig';
+
+// QualityLevel tip güvenliği için yardımcı fonksiyon
+function isQualityLevel(value: any): value is QualityLevel {
+  return ['Ekonomik', 'Orta', 'Kaliteli', 'Lüks'].includes(value);
+}
 
 export const useCalculation = () => {
   const [result, setResult] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
-  const calculateTimeline = useCallback((insaatM2: number, totalCost: number, duration: number): TimelineItem[] => {
-    const phases = [
-      { phase: 'Hazırlık ve Temel', duration: Math.ceil(duration * 0.2), cost: totalCost * 0.15 },
-      { phase: 'Kaba İnşaat', duration: Math.ceil(duration * 0.4), cost: totalCost * 0.45 },
-      { phase: 'İnce İnşaat', duration: Math.ceil(duration * 0.3), cost: totalCost * 0.30 },
-      { phase: 'Son İşler', duration: Math.ceil(duration * 0.1), cost: totalCost * 0.10 }
-    ];
+  const calculateTimeline = useCallback(
+    (insaatM2: number, totalCost: number, duration: number): TimelineItem[] => {
+      const phases = [
+        { phase: 'Hazırlık ve Temel', duration: Math.ceil(duration * 0.2), cost: totalCost * 0.15 },
+        { phase: 'Kaba İnşaat', duration: Math.ceil(duration * 0.4), cost: totalCost * 0.45 },
+        { phase: 'İnce İnşaat', duration: Math.ceil(duration * 0.3), cost: totalCost * 0.3 },
+        { phase: 'Son İşler', duration: Math.ceil(duration * 0.1), cost: totalCost * 0.1 }
+      ];
 
-    let currentMonth = 0;
-    return phases.map(phase => {
-      const startMonth = currentMonth;
-      const endMonth = currentMonth + phase.duration;
-      currentMonth = endMonth;
-      
-      return {
-        ...phase,
-        startMonth,
-        endMonth
-      };
-    });
-  }, []);
+      let currentMonth = 0;
+      return phases.map(phase => {
+        const startMonth = currentMonth;
+        const endMonth = currentMonth + phase.duration;
+        currentMonth = endMonth;
+
+        return {
+          ...phase,
+          startMonth,
+          endMonth
+        };
+      });
+    },
+    []
+  );
 
   const calculate = useCallback((input: CalculationInput) => {
     setIsCalculating(true);
-    
+
     try {
       const a = parseFloat(input.arsaM2);
       const i = parseFloat(input.insaatM2);
-      
-      // Temel validasyon (form'da da kontrol ediliyor ama güvenlik için)
+
       if (isNaN(a) || isNaN(i) || a <= 0 || i <= 0) {
-        throw new Error("Geçersiz alan değerleri!");
+        throw new Error('Geçersiz alan değerleri!');
       }
 
       // Kaba maliyet hesaplamaları
@@ -88,15 +95,32 @@ export const useCalculation = () => {
 
       // Toplam hesaplamaları
       const toplamKaba = betonFiyat + demirFiyat + kalipDemirIscilik + cati + duvarFiyat;
-      const toplamInce = alciBoyaSivaFiyat + mekanik + zeminKaplama + dogramaFiyat + 
-                        disCepheFiyat + oncesiGider + montajFiyat + asansorBoslugu + 
-                        asansorCihazFiyat + peyzajFiyat + ongorulmayanGiderler + resmiIslemler;
+      const toplamInce =
+        alciBoyaSivaFiyat +
+        mekanik +
+        zeminKaplama +
+        dogramaFiyat +
+        disCepheFiyat +
+        oncesiGider +
+        montajFiyat +
+        asansorBoslugu +
+        asansorCihazFiyat +
+        peyzajFiyat +
+        ongorulmayanGiderler +
+        resmiIslemler;
 
       const toplam = (input.kabaMaliyet ? toplamKaba : 0) + (input.inceMaliyet ? toplamInce : 0);
-      
+
       // Çarpanları uygula
       const cityMultiplier = CITY_MULTIPLIERS[input.selectedCity as keyof typeof CITY_MULTIPLIERS] || 1;
-      const qualityMultiplier = QUALITY_MULTIPLIERS[input.qualityLevel as QualityLevel];
+
+      let qualityMultiplier = 1;
+      if (isQualityLevel(input.qualityLevel)) {
+        qualityMultiplier = QUALITY_MULTIPLIERS[input.qualityLevel];
+      } else {
+        console.warn(`Bilinmeyen kalite seviyesi: ${input.qualityLevel}, varsayılan 1 kullanıldı.`);
+      }
+
       const toplamCarpanli = toplam * cityMultiplier * qualityMultiplier;
 
       const hataPayi = toplamCarpanli * 0.05;

@@ -141,10 +141,10 @@ export const CalculationForm: React.FC<CalculationFormProps> = ({
             {...register('profitMargin', {
               required: 'Kâr marjı gereklidir',
               validate: {
-                range: (value) => {
-                  const num = parseFloat(value);
-                  return (!isNaN(num) && num >= 0 && num <= 100) || 'Kâr marjı 0-100 arasında olmalıdır';
-                }
+  range: (value) => {
+    const num = parseFloat(String(value)); // Burada String() ekle
+    return (!isNaN(num) && num >= 0 && num <= 100) || 'Kâr marjı 0-100 arasında olmalıdır';
+  }
               }
             })}
           />

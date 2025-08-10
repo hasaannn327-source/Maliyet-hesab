@@ -160,7 +160,7 @@ export const CalculationForm: React.FC<CalculationFormProps> = ({
               required: 'Proje süresi gereklidir',
               validate: {
                 range: (value) => {
-                  const num = parseFloat(value);
+                  const num = parseFloat(String(value));
                   return (!isNaN(num) && num >= 1 && num <= 60) || 'Proje süresi 1-60 ay arasında olmalıdır';
                 }
               }

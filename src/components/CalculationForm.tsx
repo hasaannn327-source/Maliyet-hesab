@@ -34,12 +34,14 @@ export const CalculationForm: React.FC<CalculationFormProps> = ({
       qualityLevel: 'Standart',
       profitMargin: 20,
       projectDuration: 12
-    }
+    },
+    mode: 'onChange' // Anlık validasyon için
   });
 
   const watchedValues = watch();
 
   const handleFormSubmit = (data: CalculationInput) => {
+    console.log('Form submitted with data:', data); // Debug için
     onSubmit(data);
   };
 
@@ -56,7 +58,12 @@ export const CalculationForm: React.FC<CalculationFormProps> = ({
             error={errors.arsaM2?.message}
             {...register('arsaM2', {
               required: 'Arsa alanı gereklidir',
-              min: { value: 1, message: 'Arsa alanı 0\'dan büyük olmalıdır' }
+              validate: {
+                positive: (value) => {
+                  const num = parseFloat(value);
+                  return !isNaN(num) && num > 0 || 'Arsa alanı 0\'dan büyük olmalıdır';
+                }
+              }
             })}
           />
 
@@ -68,7 +75,20 @@ export const CalculationForm: React.FC<CalculationFormProps> = ({
             error={errors.insaatM2?.message}
             {...register('insaatM2', {
               required: 'İnşaat alanı gereklidir',
-              min: { value: 1, message: 'İnşaat alanı 0\'dan büyük olmalıdır' }
+              validate: {
+                positive: (value) => {
+                  const num = parseFloat(value);
+                  return !isNaN(num) && num > 0 || 'İnşaat alanı 0\'dan büyük olmalıdır';
+                },
+                ratio: (value) => {
+                  const insaat = parseFloat(value);
+                  const arsa = parseFloat(watchedValues.arsaM2);
+                  if (!isNaN(insaat) && !isNaN(arsa) && arsa > 0) {
+                    return insaat <= arsa * 5 || 'İnşaat alanı, arsa alanının 5 katından fazla olamaz';
+                  }
+                  return true;
+                }
+              }
             })}
           />
         </div>
@@ -120,8 +140,12 @@ export const CalculationForm: React.FC<CalculationFormProps> = ({
             error={errors.profitMargin?.message}
             {...register('profitMargin', {
               required: 'Kâr marjı gereklidir',
-              min: { value: 0, message: 'Kâr marjı 0\'dan küçük olamaz' },
-              max: { value: 100, message: 'Kâr marjı 100\'den büyük olamaz' }
+              validate: {
+                range: (value) => {
+                  const num = parseFloat(value);
+                  return (!isNaN(num) && num >= 0 && num <= 100) || 'Kâr marjı 0-100 arasında olmalıdır';
+                }
+              }
             })}
           />
 
@@ -134,8 +158,12 @@ export const CalculationForm: React.FC<CalculationFormProps> = ({
             error={errors.projectDuration?.message}
             {...register('projectDuration', {
               required: 'Proje süresi gereklidir',
-              min: { value: 1, message: 'Proje süresi en az 1 ay olmalıdır' },
-              max: { value: 60, message: 'Proje süresi en fazla 60 ay olabilir' }
+              validate: {
+                range: (value) => {
+                  const num = parseFloat(value);
+                  return (!isNaN(num) && num >= 1 && num <= 60) || 'Proje süresi 1-60 ay arasında olmalıdır';
+                }
+              }
             })}
           />
         </div>

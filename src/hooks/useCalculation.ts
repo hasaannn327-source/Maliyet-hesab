@@ -35,13 +35,9 @@ export const useCalculation = () => {
       const a = parseFloat(input.arsaM2);
       const i = parseFloat(input.insaatM2);
       
-      // Validasyon
+      // Temel validasyon (form'da da kontrol ediliyor ama güvenlik için)
       if (isNaN(a) || isNaN(i) || a <= 0 || i <= 0) {
-        throw new Error("Lütfen geçerli pozitif değerler giriniz!");
-      }
-      
-      if (i > a * 5) {
-        throw new Error("İnşaat alanı, arsa alanının 5 katından fazla olamaz!");
+        throw new Error("Geçersiz alan değerleri!");
       }
 
       // Kaba maliyet hesaplamaları

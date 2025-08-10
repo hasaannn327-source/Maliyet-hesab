@@ -1,3 +1,5 @@
+export type QualityMultipliers = Record<QualityLevel, number>;
+
 export interface CalculationInput {
   arsaM2: string;
   insaatM2: string;

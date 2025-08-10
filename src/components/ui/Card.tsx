@@ -8,7 +8,7 @@ interface CardProps {
   title?: string;
   subtitle?: string;
   hover?: boolean;
-  onClick?: () => void;  // onClick prop eklendi
+  onClick?: () => void;  // Eğer onClick kullanacaksan ekle
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -17,19 +17,21 @@ export const Card: React.FC<CardProps> = ({
   title,
   subtitle,
   hover = false,
-  onClick,  // onClick props olarak alındı
+  onClick,
 }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      whileHover={hover ? { y: -2, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' } : undefined}
+      whileHover={
+        hover ? { y: -2, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' } : undefined
+      }
       className={clsx(
         'bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700',
         className
       )}
-      onClick={onClick}  {/* Burada onClick kullanılıyor */}
+      onClick={onClick}  // Burada onClick props varsa çalışacak
     >
       {(title || subtitle) && (
         <div className="mb-4">

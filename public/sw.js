@@ -1,4 +1,3 @@
-
 const CACHE_NAME = 'imar-hesap-v3';
 const urlsToCache = [
   '/',

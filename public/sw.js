@@ -1,5 +1,5 @@
-const CACHE_NAME = 'imar-hesap-v3';
-const urlsToCache = [
+const CACHE_NAME = 'imar-hesap-v5';
+const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
@@ -7,84 +7,56 @@ const urlsToCache = [
   '/icon-512.png'
 ];
 
-// Install event - cache resources
-self.addEventListener('install', (event) => {
+// Install event: sadece STATIC_ASSETS önbelleğe alınır
+self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(STATIC_ASSETS))
       .then(() => self.skipWaiting())
-      .catch((error) => {
-        console.log('Cache installation failed:', error);
-      })
   );
 });
 
-// Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
+// Activate event: eski cache'leri temizle
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
           }
         })
-      );
-    }).then(() => self.clients.claim())
-    .catch((error) => {
-      console.log('Cache activation failed:', error);
-    })
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch event - serve from cache, fallback to network
-self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
+// Fetch event: önce cache’de varsa döndür, yoksa network’ten getir ve cache’e ekle
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
 
-  // Skip chrome-extension requests
-  if (event.request.url.startsWith('chrome-extension://')) {
-    return;
-  }
+  // Chrome extension gibi özel istekleri atla
+  if (event.request.url.startsWith('chrome-extension://')) return;
 
   event.respondWith(
     caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
-        }
-        
-        // Clone the request because it's a stream
-        const fetchRequest = event.request.clone();
-        
-        return fetch(fetchRequest).then((response) => {
-          // Check if we received a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
+      .then(cachedResponse => {
+        if (cachedResponse) return cachedResponse;
+
+        return fetch(event.request).then(networkResponse => {
+          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+            return networkResponse;
           }
-          
-          // Clone the response because it's a stream
-          const responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            })
-            .catch((error) => {
-              console.log('Cache put failed:', error);
-            });
-          
-          return response;
-        }).catch((error) => {
-          console.log('Fetch failed:', error);
-          // Return a fallback response if available
+
+          const responseClone = networkResponse.clone();
+
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+
+          return networkResponse;
+        }).catch(() => {
+          // Offline fallback olarak ana sayfa
           return caches.match('/');
         });
       })

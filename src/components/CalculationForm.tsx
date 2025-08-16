@@ -121,7 +121,7 @@ export const CalculationForm: React.FC<CalculationFormProps> = ({
             >
               {Object.entries(QUALITY_MULTIPLIERS).map(([quality, multiplier]) => (
                 <option key={quality} value={quality}>
-                  {quality} {multiplier !== 1 && `(${multiplier > 1 ? '+' : ''}${((multiplier - 1) * 100).toFixed(0)}%)`}
+                  {quality} {multiplier !== 1.0 && `(${multiplier > 1.0 ? '+' : ''}${((multiplier - 1.0) * 100).toFixed(0)}%)`}
                 </option>
               ))}
             </select>

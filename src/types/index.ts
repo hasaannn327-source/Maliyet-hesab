@@ -63,19 +63,9 @@ export interface SavedCalculation {
 
 export type QualityLevel = 'Ekonomik' | 'Orta' | 'Kaliteli' | 'Lüks';
 
-interface QualityMultipliers {
-  Ekonomik: number;
-  Orta: number;
-  Kaliteli: number;
-  Lüks: number;
-}
 
-const QUALITY_MULTIPLIERS: QualityMultipliers = {
-  Ekonomik: 0.8,
-  Orta: 1.0,
-  Kaliteli: 1.3,
-  Lüks: 1.6
-};
+
+
 
 export type Theme = 'light' | 'dark';
 
@@ -99,6 +89,4 @@ export interface CityMultipliers {
   [key: string]: number;
 }
 
-export interface QualityMultipliers {
-  [key in QualityLevel]: number;
-}
+

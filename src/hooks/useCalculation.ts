@@ -2,8 +2,6 @@ import { useState, useCallback } from 'react';
 import { CalculationInput, CalculationResult, TimelineItem, QualityLevel } from '../types';
 import { CITY_MULTIPLIERS, QUALITY_MULTIPLIERS } from '../config/PriceConfig';
 
-const qualityMultiplier = QUALITY_MULTIPLIERS[input.qualityLevel];
-
 // QualityLevel tip güvenliği için yardımcı fonksiyon
 function isQualityLevel(value: any): value is QualityLevel {
   return ['Ekonomik', 'Orta', 'Kaliteli', 'Lüks'].includes(value);

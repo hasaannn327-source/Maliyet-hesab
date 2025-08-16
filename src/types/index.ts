@@ -62,11 +62,6 @@ export interface SavedCalculation {
 }
 
 export type QualityLevel = 'Ekonomik' | 'Orta' | 'Kaliteli' | 'Lüks';
-
-
-
-
-
 export type Theme = 'light' | 'dark';
 
 export interface AppContextType {
@@ -88,5 +83,4 @@ export interface PriceConfig {
 export interface CityMultipliers {
   [key: string]: number;
 }
-
 

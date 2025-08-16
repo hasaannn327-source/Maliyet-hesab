@@ -1,5 +1,11 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "rewrites": [
+    { "source": "/sw.js", "destination": "/sw.js" },
+    { "source": "/manifest.json", "destination": "/manifest.json" },
+    { "source": "/icon-:size.png", "destination": "/icon-:size.png" },
+    { "source": "/favicon.ico", "destination": "/favicon.ico" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/static/(.*)",
@@ -7,6 +13,7 @@
     },
     {
       "source": "/sw.js",
+
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
         { "key": "Service-Worker-Allowed", "value": "/" }
@@ -17,6 +24,13 @@
       "headers": [
         { "key": "Content-Type", "value": "application/manifest+json" }
       ]
+
+      "headers": [{ "key": "cache-control", "value": "no-cache" }]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [{ "key": "cache-control", "value": "no-cache" }]
+
     }
   ],
   "env": {

@@ -3,9 +3,11 @@ import { motion } from 'framer-motion';
 import { SunIcon, MoonIcon, CalculatorIcon } from '@heroicons/react/24/outline';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/Button';
+import { usePwaInstall } from '../hooks/usePwaInstall';
 
 export const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
+  const { isInstallable, isInstalled, promptInstall } = usePwaInstall();
 
   return (
     <motion.header
@@ -30,20 +32,35 @@ export const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Theme Toggle */}
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={toggleTheme}
-            className="!p-2"
-            aria-label={theme === 'dark' ? 'Açık moda geç' : 'Koyu moda geç'}
-          >
-            {theme === 'dark' ? (
-              <SunIcon className="h-5 w-5" />
-            ) : (
-              <MoonIcon className="h-5 w-5" />
+          <div className="flex items-center gap-2">
+            {/* Install PWA */}
+            {!isInstalled && isInstallable && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  void promptInstall();
+                }}
+              >
+                Yükle
+              </Button>
             )}
-          </Button>
+
+            {/* Theme Toggle */}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={toggleTheme}
+              className="!p-2"
+              aria-label={theme === 'dark' ? 'Açık moda geç' : 'Koyu moda geç'}
+            >
+              {theme === 'dark' ? (
+                <SunIcon className="h-5 w-5" />
+              ) : (
+                <MoonIcon className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </motion.header>

@@ -9,6 +9,7 @@ import {
 import { CalculationResult, CalculationInput } from '../types';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
+import { CITY_MULTIPLIERS, QUALITY_MULTIPLIERS } from '../config/PriceConfig';
 
 interface ResultsDisplayProps {
   result: CalculationResult;
@@ -185,6 +186,104 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             <div className="text-sm text-gray-600 dark:text-gray-400">TL/m²</div>
           </div>
         </div>
+      </Card>
+
+      {/* Hesaplama Doğruluğu */}
+      <Card title="🎯 Hesaplama Doğruluğu" subtitle="Varsayımlar, çarpanlar ve olası aralık">
+        {(() => {
+          const cityMultiplier = CITY_MULTIPLIERS[input.selectedCity as keyof typeof CITY_MULTIPLIERS] ?? 1;
+          const qualityMultiplier = QUALITY_MULTIPLIERS[input.qualityLevel as keyof typeof QUALITY_MULTIPLIERS] ?? 1;
+          const baseTotal = result.toplam;
+          const profitRate = input.profitMargin / 100;
+
+          const computeFinal = (qMult: number, cMult: number) => {
+            const withMultipliers = baseTotal * qMult * cMult;
+            const withError = withMultipliers * 1.05; // %5 hata payı
+            const withProfit = withError * (1 + profitRate);
+            return withProfit;
+          };
+
+          const lowerBand = result.finalTotal * 0.95;
+          const upperBand = result.finalTotal * 1.05;
+          const tlPerM2Lower = lowerBand / parseInt(input.insaatM2);
+          const tlPerM2Upper = upperBand / parseInt(input.insaatM2);
+
+          const qualityOrder: Array<keyof typeof QUALITY_MULTIPLIERS> = ['Ekonomik','Orta','Kaliteli','Lüks'];
+          const currentQualityIndex = qualityOrder.indexOf(input.qualityLevel as keyof typeof QUALITY_MULTIPLIERS);
+          const prevQuality = currentQualityIndex > 0 ? qualityOrder[currentQualityIndex - 1] : null;
+          const nextQuality = currentQualityIndex < qualityOrder.length - 1 ? qualityOrder[currentQualityIndex + 1] : null;
+
+          const cityMinus10 = computeFinal(qualityMultiplier, cityMultiplier * 0.9);
+          const cityPlus10 = computeFinal(qualityMultiplier, cityMultiplier * 1.1);
+          const qualityDown = prevQuality ? computeFinal(QUALITY_MULTIPLIERS[prevQuality], cityMultiplier) : null;
+          const qualityUp = nextQuality ? computeFinal(QUALITY_MULTIPLIERS[nextQuality], cityMultiplier) : null;
+
+          return (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-4">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Kullanılan Çarpanlar</div>
+                  <div className="flex justify-between">
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-white">Şehir Çarpanı</div>
+                      <div className="text-gray-700 dark:text-gray-300">{input.selectedCity}</div>
+                    </div>
+                    <div className="font-bold text-indigo-600 dark:text-indigo-400">x {cityMultiplier.toFixed(2)}</div>
+                  </div>
+                  <div className="flex justify-between mt-3">
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-white">Kalite Çarpanı</div>
+                      <div className="text-gray-700 dark:text-gray-300">{input.qualityLevel}</div>
+                    </div>
+                    <div className="font-bold text-indigo-600 dark:text-indigo-400">x {qualityMultiplier.toFixed(2)}</div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-4">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Hata Payı ve Aralık</div>
+                  <div className="flex items-baseline justify-between">
+                    <div className="text-gray-700 dark:text-gray-300">Hata Payı</div>
+                    <div className="font-bold text-blue-600 dark:text-blue-400">%5</div>
+                  </div>
+                  <div className="flex items-baseline justify-between mt-3">
+                    <div className="text-gray-700 dark:text-gray-300">Toplam Tahmini Aralık</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">{lowerBand.toLocaleString('tr-TR')} – {upperBand.toLocaleString('tr-TR')} TL</div>
+                  </div>
+                  <div className="flex items-baseline justify-between mt-2">
+                    <div className="text-gray-700 dark:text-gray-300">TL/m² Aralığı</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">{tlPerM2Lower.toLocaleString('tr-TR')} – {tlPerM2Upper.toLocaleString('tr-TR')} TL</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-900/30 rounded-lg p-4">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">Duyarlılık Analizi (yaklaşık)</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-gray-800 dark:text-gray-200">Şehir çarpanı -%10</div>
+                    <div className="font-semibold text-rose-600 dark:text-rose-400">{cityMinus10.toLocaleString('tr-TR')} TL</div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-gray-800 dark:text-gray-200">Şehir çarpanı +%10</div>
+                    <div className="font-semibold text-emerald-600 dark:text-emerald-400">{cityPlus10.toLocaleString('tr-TR')} TL</div>
+                  </div>
+                  {qualityDown && (
+                    <div className="flex items-center justify-between">
+                      <div className="text-gray-800 dark:text-gray-200">Kalite bir seviye düşerse</div>
+                      <div className="font-semibold text-rose-600 dark:text-rose-400">{qualityDown.toLocaleString('tr-TR')} TL</div>
+                    </div>
+                  )}
+                  {qualityUp && (
+                    <div className="flex items-center justify-between">
+                      <div className="text-gray-800 dark:text-gray-200">Kalite bir seviye artarsa</div>
+                      <div className="font-semibold text-emerald-600 dark:text-emerald-400">{qualityUp.toLocaleString('tr-TR')} TL</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </Card>
 
       {/* Aksiyon Butonları */}

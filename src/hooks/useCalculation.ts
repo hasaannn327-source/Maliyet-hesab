@@ -13,25 +13,40 @@ export const useCalculation = () => {
 
   const calculateTimeline = useCallback(
     (insaatM2: number, totalCost: number, duration: number): TimelineItem[] => {
-      const phases = [
-        { phase: 'Hazırlık ve Temel', duration: Math.ceil(duration * 0.2), cost: totalCost * 0.15 },
-        { phase: 'Kaba İnşaat', duration: Math.ceil(duration * 0.4), cost: totalCost * 0.45 },
-        { phase: 'İnce İnşaat', duration: Math.ceil(duration * 0.3), cost: totalCost * 0.3 },
-        { phase: 'Son İşler', duration: Math.ceil(duration * 0.1), cost: totalCost * 0.1 }
-      ];
+      // Distribute integer months across phases so the sum equals 'duration'
+      const durationRatios = [0.2, 0.4, 0.3, 0.1];
+      const phaseNames = ['Hazırlık ve Temel', 'Kaba İnşaat', 'İnce İnşaat', 'Son İşler'];
+      const costRatios = [0.15, 0.45, 0.3, 0.1];
+
+      const raw = durationRatios.map(ratio => duration * ratio);
+      const base = raw.map(value => Math.floor(value));
+      let remainder = duration - base.reduce((sum, v) => sum + v, 0);
+
+      const fractional = raw.map((value, idx) => ({ idx, frac: value - base[idx] }));
+      fractional.sort((a, b) => b.frac - a.frac);
+
+      const finalDurations = [...base];
+      for (let i = 0; i < fractional.length && remainder > 0; i++) {
+        finalDurations[fractional[i].idx] += 1;
+        remainder -= 1;
+      }
 
       let currentMonth = 0;
-      return phases.map(phase => {
+      const timeline: TimelineItem[] = [];
+      for (let i = 0; i < phaseNames.length; i++) {
         const startMonth = currentMonth;
-        const endMonth = currentMonth + phase.duration;
+        const endMonth = startMonth + finalDurations[i];
         currentMonth = endMonth;
-
-        return {
-          ...phase,
+        timeline.push({
+          phase: phaseNames[i],
+          duration: finalDurations[i],
+          cost: totalCost * costRatios[i],
           startMonth,
-          endMonth
-        };
-      });
+          endMonth,
+        });
+      }
+
+      return timeline;
     },
     []
   );
